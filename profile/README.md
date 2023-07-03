@@ -38,7 +38,7 @@ Hey, this is us 👋 The committers drive this open source project, take respons
 
 Engaged contributors are the heart 💗 of every open source project. For getting started, you may take
 a look at the following links:
-- [Developer documentation](../docs/developer/README.md)
+- [Developer documentation](https://github.com/eclipse-edc/.github/tree/main/docs/developer)
 - [Minimum Viable Dataspace](https://github.com/eclipse-edc/MinimumViableDataspace)
 - [Samples](https://github.com/eclipse-edc/Samples)
 - [YouTube channel](https://www.youtube.com/@eclipsedataspaceconnector9622)
