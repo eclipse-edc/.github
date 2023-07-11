@@ -1,15 +1,15 @@
-name: Create EDC Release
+name: Create EDC Component Release
 on:
   workflow_dispatch:
     inputs:
-      edc_version:
+      component_version:
         description: 'Version string that is used for publishing (e.g. "1.0.0", NOT "v1.0.0"). Appending -SNAPSHOT will create a snapshot release.'
         required: true
         type: string
 
 
 env:
-  EDC_VERSION: ${{ github.event.inputs.edc_version || inputs.edc_version }}
+  COMPONENT_VERSION: ${{ github.event.inputs.component_version || inputs.component_version }}
 
 jobs:
   Prepare-Release:
@@ -25,7 +25,7 @@ jobs:
             github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: 'refs/tags/v${{ env.EDC_VERSION }}',
+              ref: 'refs/tags/v${{ env.COMPONENT_VERSION }}',
               sha: context.sha
             })
 
@@ -36,14 +36,14 @@ jobs:
           github_token: ${{ github.token }}
           source_ref: ${{ github.ref }}
           target_branch: 'releases'
-          commit_message_template: 'Merge commit for release of version v${{ env.EDC_VERSION }}'
+          commit_message_template: 'Merge commit for release of version v${{ env.COMPONENT_VERSION }}'
 
     outputs:
-      edc-version: ${{ env.EDC_VERSION }}
+      component-version: ${{ env.COMPONENT_VERSION }}
 
   Github-Release:
     # cannot use the workflow-level env yet as it does not yet exist, must take output from previous job
-    if: ${{ !endsWith( needs.Prepare-Release.outputs.edc-version, '-SNAPSHOT') }}
+    if: ${{ !endsWith( needs.Prepare-Release.outputs.component-version, '-SNAPSHOT') }}
     needs:
       - Prepare-Release
     runs-on: ubuntu-latest
@@ -57,14 +57,14 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           generateReleaseNotes: true
-          tag: "v${{ env.EDC_VERSION }}"
+          tag: "v${{ env.COMPONENT_VERSION }}"
           token: ${{ secrets.GITHUB_TOKEN }}
           removeArtifacts: true
 
   Bump-Version:
     name: 'Update release version'
     # cannot use the workflow-level env yet as it does not yet exist, must take output from previous job
-    if: ${{ !endsWith( needs.Prepare-Release.outputs.edc-version, '-SNAPSHOT') }}
+    if: ${{ !endsWith( needs.Prepare-Release.outputs.component-version, '-SNAPSHOT') }}
     needs: [ Prepare-Release, Github-Release ]
     runs-on: ubuntu-latest
     steps:
@@ -72,4 +72,4 @@ jobs:
       - uses: ./.github/actions/bump-version
         with:
           target_branch: "main"
-          base_version: ${{ needs.Prepare-Release.outputs.edc-version }}
+          base_version: ${{ needs.Prepare-Release.outputs.component-version }}
