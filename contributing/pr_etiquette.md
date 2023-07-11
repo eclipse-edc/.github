@@ -57,7 +57,7 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
   _encourage_ contributions.
 
 ## The technical committers 
-_(as of June 29, 2022)_
+_(as of June 29, 2023)_
 
 - @wolf4ood
 - @jimmarino
