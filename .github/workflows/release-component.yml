@@ -41,7 +41,7 @@ jobs:
     outputs:
       component-version: ${{ env.COMPONENT_VERSION }}
 
-  Github-Release:
+  GitHub-Release:
     # cannot use the workflow-level env yet as it does not yet exist, must take output from previous job
     if: ${{ !endsWith( needs.Prepare-Release.outputs.component-version, '-SNAPSHOT') }}
     needs:
@@ -65,7 +65,7 @@ jobs:
     name: 'Update release version'
     # cannot use the workflow-level env yet as it does not yet exist, must take output from previous job
     if: ${{ !endsWith( needs.Prepare-Release.outputs.component-version, '-SNAPSHOT') }}
-    needs: [ Prepare-Release, Github-Release ]
+    needs: [ Prepare-Release, GitHub-Release ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

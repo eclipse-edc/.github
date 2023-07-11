@@ -8,7 +8,7 @@ There are currently two possible levels of adoption for the EDC project:
 
 ## Get referenced as "friend"
 
-This means we will add a link to our [known friends](known_friends.md) list, where we reference projects and features that we are aware of. These are repositories that have no direct affiliation with EDC and are hosted outside the `eclipse-edc` GitHub organization. We call this a "friend" of EDC (derived from the C++ [`friend class` concept](https://en.cppreference.com/w/cpp/language/friend)). 
+This means we will add a link to our [known friends](../KNOWN_FRIENDS.md) list, where we reference projects and features that we are aware of. These are repositories that have no direct affiliation with EDC and are hosted outside the `eclipse-edc` GitHub organization. We call this a "friend" of EDC (derived from the C++ [`friend class` concept](https://en.cppreference.com/w/cpp/language/friend)). 
 In order to become a "friend" of EDC, we do a quick scan of the code base to make sure it does not contain anything offensive, or that contradicts our code of conduct, ethics or other core OSS values. 
 
 The EDC core team does not maintain or endorse "friend" projects in any way, nor is it responsible for it, but we do provide a URL list to make it easier for other developers to find related projects and get an overview of the EDC market spread.
@@ -43,9 +43,9 @@ Features that do not work well in clustered environments are difficult to adopt,
 Features that have a large impact on the code base are very complex to thoroughly test, they have a high chance to destabilize the code and require careful inspection. Self-contained features on the other hand are easier to isolate and test.
 
 And on a more general level:
-- does your contribution comply with our [licensing](LICENSE)?
+- does your contribution comply with our [licensing](../LICENSE)?
 - does the code adhere to our [styleguide](styleguide.md) and
-  our [architectural principles](docs/developer/architecture/coding-principles.md)?
+  our [architectural principles](coding-principles.md)?
 - are you willing to accept our [contributing guidelines](../CONTRIBUTING.md)?
 - are you prepared to make frequent contributions and help out with maintaining this feature?
 

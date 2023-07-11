@@ -109,7 +109,7 @@
 1. There should only be a root `gradle.properties` that contains build variables. Do not create separate
    `gradle.properties` files in a module.
 2. For external dependencies, do not reference the version directly. Instead, use
-   the [version catalog](../version-catalogs.md) feature.
+   the [version catalog](../docs/developer/version-catalogs.md) feature.
 
 ## X. Handling Null Return Values
 
@@ -131,7 +131,7 @@
 
 ## XIII. Observability
 
-1. Services are [instrumented for collecting essential metrics](../metrics.md), in particular instances
+1. Services are [instrumented for collecting essential metrics](https://github.com/eclipse-edc/Connector/blob/main/docs/developer/metrics.md), in particular instances
    of `ExecutorService`.
 
 ## XIV. Streams

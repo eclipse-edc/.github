@@ -24,7 +24,7 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
   force-pushing. Do this when your PR is ready to review.
 - If you require a reviewer's input while it's still in draft, please contact the designated reviewer using
   the `@mention` feature and let them know what you'd like them to look at.
-- Request a review from one of the [technical committers](pr_etiquette.md#the-technical-committers-as-of-may-13-2022). Requesting a review from anyone else is still possible, and
+- Request a review from one of the [technical committers](pr_etiquette.md#the-technical-committers). Requesting a review from anyone else is still possible, and
   sometimes may be advisable, but only committers can merge PRs, so be sure to include them early on.
 - Re-request reviews after all remarks have been adopted. This helps reviewers track their work in GitHub.
 - If you disagree with a committer's remarks, feel free to object and argue, but if no agreement is reached, you'll have
@@ -34,14 +34,14 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
   - The title must follow the format as `<type>(<optional scope>): <description>`.
     `build`, `chore`, `ci`, `docs`, `feat`, `fix`, `perf`, `refactor`, `revert`, `style`, `test` are allowed for the `<type>`.
   - The length must be kept under 80 characters.
-  - See [check-pull-request-title job of GitHub workflow](https://github.com/eclipse-edc/Connector/blob/main/.github/workflows/scan-pull-request.yaml) for checking details.
+  - See [check-pull-request-title job of GitHub workflow](../.github/workflows/scan-pull-request.yaml) for checking details.
 
 ## As a reviewer
 
 - Please complete reviews within two business days or delegate to another committer, removing yourself as a reviewer.
 - If you have been requested as reviewer, but cannot do the review for any reason (time, lack of knowledge in particular
-  area, etc.) please comment that in the PR and remove yourself as a reviewer, suggesting a stand-in. The [code
-  owners document](CODEOWNERS) should help with that.
+  area, etc.) please comment that in the PR and remove yourself as a reviewer, suggesting a stand-in. The **CODEOWNERS** document
+  should help with that.
 - Don't be overly pedantic.
 - Don't argue basic principles (code style, architectural decisions, etc.)
 - Use the `suggestion` feature of GitHub for small/simple changes.
@@ -57,7 +57,7 @@ Submitting pull requests in EDC should be done while adhering to a couple of sim
   _encourage_ contributions.
 
 ## The technical committers 
-_(as of June 29, 2022)_
+_(as of June 29, 2023)_
 
 - @wolf4ood
 - @jimmarino

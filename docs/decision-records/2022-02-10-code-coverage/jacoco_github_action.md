@@ -1,4 +1,4 @@
-# JaCoCo with Github Action
+# JaCoCo with GitHub Action
 
 Code coverage coming from JaCoCo reports can be added to a PR using [GitHub Action JaCoCo Report](https://github.com/marketplace/actions/jacoco-report).
 
@@ -13,7 +13,7 @@ Code coverage coming from JaCoCo reports can be added to a PR using [GitHub Acti
     uses: madrapps/jacoco-report@v1.2
     with:
       paths: ${{ steps.coverage-paths.outputs.COVERAGE_REPORT_PATHS }} # Comma separated absolute paths of the generated jacoco xml files
-      token: ${{ secrets.GITHUB_TOKEN }} # Github personal token to add commits to Pull Request
+      token: ${{ secrets.GITHUB_TOKEN }} # GitHub personal token to add commits to Pull Request
       min-coverage-overall: 40 # The minimum code coverage that is required to pass for overall project
       min-coverage-changed-files: 60 #The minimum code coverage that is required to pass for changed files
 ```

@@ -41,7 +41,7 @@ Code coverage analysis with SonarQube:
 
 ![Code Coverage with Sonar](code-coverage-sonar.png)
 
-## Integration with Github Actions
+## Integration with GitHub Actions
 
 Integration with GitHub Actions wasn't a part of this spike, because it requires having a SonarQube instance deployed for the whole project, instead of using
 localhost version.
@@ -53,5 +53,5 @@ More information about [GitHub Integration](https://docs.sonarqube.org/latest/an
 ## Limitations of the Community Edition version
 
 - Analysis of multiple branches is not supported
-- Reporting measures to branches and pull requests in Github not supported
-- Automatic detection of branches/pull requests in Github Actions not supported
+- Reporting measures to branches and pull requests in GitHub not supported
+- Automatic detection of branches/pull requests in GitHub Actions not supported
