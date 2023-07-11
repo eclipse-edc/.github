@@ -3,7 +3,7 @@
 ## Decision
 [Committer of the EDC](https://projects.eclipse.org/projects/technology.edc/who) project have a higher activity requirement, as they directly impact the ability of others to contribute. Therefore, *Committers* with an extended period away from the project with no activity will be retired from their role of *Committer* in the EDC and will be required to go through the meritocratic process again after re-familiarizing themselves with the current state.
 
-Inactive *Committers* are defined as members of the EDC *Committers* with no contributions across any repository within 6 months (according to EF’s suggestion), or recognizable non-code contributions to the project. *Committers* are required to show up in *Committer-Meetings*.
+Inactive *Committers* are defined as members of the EDC *Committers* with no contributions across any repository within 6 months (according to EF’s suggestion), or recognizable non-code contributions to the project. *Committers* are expected to regularly attend *Committer-Meetings*.
 
 NB: The EF tool does not consider non-code contributions. If a non-code contributing member is accidentally removed this way, they may open an issue to quickly be re-instated.
 
