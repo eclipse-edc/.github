@@ -98,7 +98,7 @@ introduce code that has nothing to do with the test and may cause security probl
 Docker API), etc.
 
 This does not at all discourage the use of external test environments like containers, rather, the external system
-should be deployed in the CI script (e.g. through Github's `services` feature), or there might even be a dedicated test
+should be deployed in the CI script (e.g. through GitHub's `services` feature), or there might even be a dedicated test
 instance running continuously, e.g. a CosmosDB test instance in Azure. In the latter case we need to be careful to avoid
 conflicts (e.g. database names) when multiple test runners access that system simultaneously and to properly clean-up
 any residue before and after the test.
@@ -126,7 +126,7 @@ For example to run all integration tests from Azure cosmos db module and its sub
 ```
 
 _Command as `./gradlew :extensions:azure:cosmos test -DincludeTags="AzureCosmosDbIntegrationTest"` does not execute
-tests from all sub-modules so we need to use `-p` to specify the module project path._
+tests from all submodules, so we need to use `-p` to specify the module project path._
 
 Cosmos DB integration tests are run by default against a locally
 running [Cosmos DB Emulator](https://docs.microsoft.com/azure/cosmos-db/local-emulator). You can also use an instance of
@@ -215,7 +215,7 @@ DO NOT:
 - try to cover everything with integration tests. It's typically a code smell if there are no corresponding unit tests
   for an integration test.
 - slip into a habit of testing the external system rather than your usage of it
-- store secrets directly in the code. Github will warn about that.
+- store secrets directly in the code. GitHub will warn about that.
 - perform complex external system setup in `@BeforeEach` or `@BeforeAll`
 
 ## System tests
