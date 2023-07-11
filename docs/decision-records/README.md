@@ -20,7 +20,7 @@
 - [2023-05-25 Template Repository](2023-05-25-template-repository/)
 - [2023-06-19 New Issue Triage Process](2023-06-19-new-issue-triage-process/)
 - [2023-06-19 Onboarding Contributors](2023-06-19-onboarding-contributors/)
-- [2023-06-19 Onboarding Contributors](2023-06-19-onboarding-contributors/)
+- [2023-07-06 Committer Retirements](2023-07-06-committer-retirement/)
 
 ## Repository-specific
 
