@@ -1,8 +1,10 @@
 name: Close Inactive Issues
+
 on:
-  schedule:
-    - cron: "30 1 * * *" # once a day (1:30 UTC)
-  workflow_dispatch: # allow manual trigger
+  workflow_call:
+    secrets:
+      envGH:
+        required: true
 
 jobs:
   close-issues-in-triage:
@@ -24,7 +26,7 @@ jobs:
           remove-issue-stale-when-updated: true
           exempt-all-issue-milestones: false # issues with assigned milestones will be ignored
           only-labels: 'triage'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.envGH }}
 
   close-issues-with-assignee:
     runs-on: ubuntu-latest
@@ -45,7 +47,7 @@ jobs:
           remove-issue-stale-when-updated: true
           exempt-all-issue-milestones: true # issues with assigned milestones will be ignored
           exempt-issue-labels: bug # ignore issues labelled as bug
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.envGH }}
 
   close-issues-without-assignee:
     runs-on: ubuntu-latest
@@ -67,7 +69,7 @@ jobs:
           exempt-all-issue-milestones: true # issues with assigned milestones will be ignored
           exempt-all-issue-assignees: true # issues with assignees will be ignored
           exempt-issue-labels: bug # ignore issues labelled as bug
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.envGH }}
 
   close-inactive-pull-requests:
     runs-on: ubuntu-latest
@@ -85,4 +87,4 @@ jobs:
           days-before-pr-stale: 7
           days-before-pr-close: 7
           remove-pr-stale-when-updated: true
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          repo-token: ${{ secrets.envGH }}
