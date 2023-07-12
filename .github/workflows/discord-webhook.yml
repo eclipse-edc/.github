@@ -7,6 +7,8 @@ on:
         required: true
       event:
         required: true
+      repository:
+        required: true
     secrets:
       envDiscord:
         required: true
