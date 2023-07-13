@@ -2,14 +2,11 @@
 name: "Bump version (manually)"
 
 on:
-  # can be called manually from GH webpage
-  workflow_dispatch:
+  workflow_call:
     inputs:
       target_branch:
-        default: 'main'
-        description: "Branch on which the version bump is to be done."
         required: false
-
+        type: string
 
 jobs:
   Bump-Version:
