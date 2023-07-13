@@ -185,7 +185,7 @@ The following list shows examples of non-code contributions which, however, are 
   - Evangelizing the project
   - Developing community
 - Community education
-  - Answering questions on Github, Discord, Youtube, etc.
+  - Answering questions on GitHub, Discord, Youtube, etc.
   - Onboarding new contributors
   - Contribute to EDC docs
   - Doing hands-on sessions and demos
