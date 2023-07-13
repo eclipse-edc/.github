@@ -1,12 +1,7 @@
 name: 'Dependency Review'
-on:
-  push:
-    branches:
-      - main
-  pull_request:
 
-permissions:
-  contents: read
+on:
+  workflow_call:
 
 jobs:
   Check-Allowed-Licenses:
@@ -39,25 +34,31 @@ jobs:
           curl -L https://repo.eclipse.org/service/local/artifact/maven/redirect\?r\=dash-licenses\&g\=org.eclipse.dash\&a\=org.eclipse.dash.licenses\&v\=LATEST --output dash.jar
       - name: Regenerate DEPENDENCIES
         run: |
-          if [ -f DEPENDENCIES ]; then
-            # dash returns a nonzero exit code if there are libs that need review. the "|| true" avoids that
-            ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
-  
-            # log warning if restricted deps are found
-            grep -E 'restricted' DEPENDENCIES | if test $(wc -l) -gt 0; then 
-              echo "::warning file=DEPENDENCIES,title=Restricted Dependencies found::Some dependencies are marked 'restricted' - please review them" 
-            fi
-  
-            # log error and fail job if rejected deps are found
-            grep -E 'rejected' DEPENDENCIES | if test $(wc -l) -gt 0; then
-              echo "::error file=DEPENDENCIES,title=Rejected Dependencies found::Some dependencies are marked 'rejected', they cannot be used"
-              exit 1
-            fi
-          else
-            echo "::warning file=DEPENDENCIES,title=DEPENDENCIES file missing::The DEPENDENCIES file was missing, the checks did not run."
+          # dash returns a nonzero exit code if there are libs that need review. the "|| true" avoids that
+          ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
+
+          # log warning if restricted deps are found
+          grep -E 'restricted' DEPENDENCIES | if test $(wc -l) -gt 0; then 
+            echo "::warning file=DEPENDENCIES,title=Restricted Dependencies found::Some dependencies are marked 'restricted' - please review them" 
+          fi
+
+          # log error and fail job if rejected deps are found
+          grep -E 'rejected' DEPENDENCIES | if test $(wc -l) -gt 0; then
+            echo "::error file=DEPENDENCIES,title=Rejected Dependencies found::Some dependencies are marked 'rejected', they cannot be used"
+            exit 1
           fi
       - name: Check for differences
         run: |
-          if [ -f DEPENDENCIES ]; then
-            diff DEPENDENCIES DEPENDENCIES-gen
-          fi
+          diff DEPENDENCIES DEPENDENCIES-gen
+
+  Dependency-Analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-build
+
+      - name: Dependency rules report
+        run: ./gradlew -Dorg.gradle.jvmargs="-Xmx1g" buildHealth
+
+      - name: Dependency analysis report
+        run: cat build/reports/dependency-analysis/build-health-report.txt
