@@ -1,0 +1,13 @@
+name: 'Dependency Review'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  trigger-workflow:
+    uses: ./.github/workflows/dependency-review.yml@main
