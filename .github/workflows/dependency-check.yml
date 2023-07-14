@@ -40,8 +40,8 @@ jobs:
           ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
 
           # log warning if restricted deps are found
-          grep -E 'restricted' DEPENDENCIES | if test $(wc -l) -gt 0; then 
-            echo "::warning file=DEPENDENCIES,title=Restricted Dependencies found::Some dependencies are marked 'restricted' - please review them" 
+          grep -E 'restricted' DEPENDENCIES | if test $(wc -l) -gt 0; then
+            echo "::warning file=DEPENDENCIES,title=Restricted Dependencies found::Some dependencies are marked 'restricted' - please review them"
           fi
 
           # log error and fail job if rejected deps are found
@@ -54,11 +54,11 @@ jobs:
           if diff DEPENDENCIES DEPENDENCIES-gen ; then
             echo "DEPENDENCIES up-do-date"
           else
-            diff DEPENDENCIES DEPENDENCIES-gen
+            diff DEPENDENCIES DEPENDENCIES-gen || true
             echo "------------------------------------------------------------"
-            echo "Please copy the following content back to DEPENDENCIES" 
+            echo "=== Please copy the following content back to DEPENDENCIES ==="
             cat DEPENDENCIES-gen
-            echo "end of content"
+            echo "=== end of content ==="
             echo "::error file=DEPENDENCIES,title=Dependencies outdated::The DEPENDENCIES file was outdated and must be regenerated. Check the output of this job for more information"
             exit 1
           fi
