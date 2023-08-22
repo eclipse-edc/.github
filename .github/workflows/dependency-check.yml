@@ -2,9 +2,6 @@ name: 'Dependency Review'
 on:
   workflow_call:
 
-permissions:
-  contents: read
-
 jobs:
   Review-Allowed-Licenses:
     runs-on: ubuntu-latest
