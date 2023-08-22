@@ -10,4 +10,4 @@ permissions:
 
 jobs:
   trigger-workflow:
-    uses: ./.github/workflows/dependency-check.yml@main
+    uses: eclipse-edc/.github/.github/workflows/dependency-check.yml@main

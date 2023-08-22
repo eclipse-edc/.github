@@ -12,6 +12,6 @@ on:
 
 jobs:
   trigger-workflow:
-    uses: ./.github/workflows/bump-version.yaml@main
+    uses: eclipse-edc/.github/.github/workflows/bump-version.yaml@main
     with:
       target_branch: ${{ inputs.target_branch }}

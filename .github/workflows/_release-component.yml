@@ -14,7 +14,7 @@ env:
 
 jobs:
   trigger-workflow:
-    uses: ./.github/workflows/release-component.yml@main
+    uses: eclipse-edc/.github/.github/workflows/release-component.yml@main
     with:
       component_version: ${{ env.COMPONENT_VERSION }}
     secrets:

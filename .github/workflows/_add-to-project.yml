@@ -8,6 +8,6 @@ on:
 
 jobs:
   trigger-workflow:
-    uses: ./.github/workflows/add-to-project.yml@main
+    uses: eclipse-edc/.github/.github/workflows/add-to-project.yml@main
     secrets:
       org_project: ${{ secrets.ORGANIZATION_PROJECT }}

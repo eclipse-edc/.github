@@ -8,6 +8,6 @@ on:
 
 jobs:
   trigger-workflow:
-    uses: ./.github/workflows/first-interaction.yml@main
+    uses: eclipse-edc/.github/.github/workflows/first-interaction.yml@main
     secrets:
       envGH: ${{ secrets.GITHUB_TOKEN }}

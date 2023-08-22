@@ -16,4 +16,4 @@ concurrency:
 
 jobs:
   trigger-workflow:
-    uses: ./.github/workflows/codeql-analysis.yml@main
+    uses: eclipse-edc/.github/.github/workflows/codeql-analysis.yml@main
