@@ -8,7 +8,7 @@ jobs:
     continue-on-error: false
     if: ${{ github.event_name == 'pull_request' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: 'Check Allowed Licenses'
         uses: actions/dependency-review-action@v3
         with:
@@ -26,7 +26,7 @@ jobs:
   Dash-Verify-Licenses:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Download latest Eclipse Dash
         run: |
