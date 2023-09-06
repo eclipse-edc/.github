@@ -19,7 +19,7 @@ various ecosystems. Please also refer to:
 
 ## Committers
 
-Hey, this is us 👋 The committers drive this open source project, take responsibility, and make [decisions](https://github.com/eclipse-edc/.github/tree/main/docs/decision-records).
+Hey, this is us 👋 The committers drive this open source project, take responsibility, and make [decisions](https://github.com/eclipse-edc/docs/tree/main/developer/decision-records/README.md).
 
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/8570990?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/80531692?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
@@ -38,10 +38,10 @@ Hey, this is us 👋 The committers drive this open source project, take respons
 
 Engaged contributors are the heart 💗 of every open source project. For getting started, you may take
 a look at the following links:
-- [Developer documentation](https://github.com/eclipse-edc/.github/tree/main/docs/developer)
+- [Developer's guide](https://github.com/eclipse-edc/docs/tree/main/developer/README.md)
 - [Minimum Viable Dataspace](https://github.com/eclipse-edc/MinimumViableDataspace)
 - [Samples](https://github.com/eclipse-edc/Samples)
 - [YouTube channel](https://www.youtube.com/@eclipsedataspaceconnector9622)
 
-In order to contribute, please read our [contribution guidelines](https://github.com/eclipse-edc/.github/blob/main/CONTRIBUTING.md) carefully. 🙌
+In order to contribute, please read our [contribution guidelines](https://github.com/eclipse-edc/docs/blob/main/CONTRIBUTING.md) carefully. 🙌
 We are happy to welcome you in our community! 🚀
