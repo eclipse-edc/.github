@@ -7,7 +7,7 @@ on:
 
 jobs:
   trigger-workflow:
-    uses: eclipse-edc/.github/.github/workflows/trigger-snapshot.yml@main
+    uses: eclipse-edc/.github/.github/workflows/publish-snapshot.yml@main
     with:
       github_repository: ${{ github.repository }}
     secrets:
