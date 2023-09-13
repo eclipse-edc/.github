@@ -1,36 +1,59 @@
-name: "Create Snapshot Build"
+name: "Publish Snapshot Build"
 
 on:
+  workflow_dispatch:
   workflow_call:
-    inputs:
-      github_repository:
-        required: true
-        type: string
-    secrets:
-      jenkins_user:
-        required: true
-      jenkins_token:
-        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  Trigger-Snapshot:
+  secrets-presence:
+    name: "Check for required credentials"
     runs-on: ubuntu-latest
-    # forks cannot trigger Jenkins
-    if: ${{ startsWith( inputs.github_repository, 'eclipse-edc') }}
+    outputs:
+      HAS_OSSRH: ${{ steps.secret-presence.outputs.HAS_OSSRH }}
     steps:
-      # Trigger EF Jenkins. This job waits for Jenkins to complete the publishing, which may take a long time, because every
-      # module is signed individually, and parallelism is not available. Hence, the increased timeout of 3600 seconds.
-      # There is no way to cancel the process on Jenkins from withing GitHub.
-      - name: Call Jenkins API to trigger build
-        uses: toptal/jenkins-job-trigger-action@master
+      - name: Check whether secrets exist
+        id: secret-presence
+        run: |
+          [ ! -z "${{ secrets.ORG_GPG_PASSPHRASE }}" ] &&
+          [ ! -z "${{ secrets.ORG_GPG_PRIVATE_KEY }}" ] &&
+          [ ! -z "${{ secrets.ORG_OSSRH_USERNAME }}" ] && echo "HAS_OSSRH=true" >> $GITHUB_OUTPUT
+          exit 0
+
+  Trigger-Snapshot:
+    name: "Publish artefacts to OSSRH Snapshots / MavenCentral"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: [ secrets-presence ]
+
+    if: |
+      needs.secrets-presence.outputs.HAS_OSSRH
+    steps:
+      # Set-Up
+      - uses: actions/checkout@v3.5.2
+
+      # Import GPG Key
+      - uses: ./.github/actions/import-gpg-key
+        name: "Import GPG Key"
         with:
-          jenkins_url: "https://ci.eclipse.org/edc/"
-          jenkins_user: ${{ secrets.jenkins_user }}
-          jenkins_token: ${{ secrets.jenkins_token }}
-          # empty params are needed, otherwise the job will fail.
-          job_params: |
-            {
-              "REPO": join('https://github.com/', ${{ inputs.github_repository }})
-            }
-          job_name: "Publish-Component"
-          job_timeout: "3600" # Default 30 sec. (optional)
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+
+      - uses: ./.github/actions/setup-build
+      - name: "Publish snapshot version"
+        env:
+          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
+          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
+        run: |-
+          VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+          if [[ $VERSION != *-SNAPSHOT ]]
+          then
+            echo "::warning file=gradle.properties::$VERSION is not a snapshot version - will not publish!"
+            exit 0
+          fi
+          echo "Publishing Version $VERSION to Sonatype"
+          ./gradlew publishToSonatype --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
