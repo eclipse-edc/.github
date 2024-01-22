@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: 'Check Allowed Licenses'
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         with:
           fail-on-severity: critical
           # Representation of this list: https://www.eclipse.org/legal/licenses.php#
