@@ -45,7 +45,7 @@ jobs:
           OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
           OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
         run: |-
-          VERSION=$(./gradlew properties -q | grep "version:" | awk '{print $2}')
+          VERSION=$(./gradlew properties -q | grep "version: " | awk '{print $2}')
           if [[ $VERSION != *-SNAPSHOT ]]
           then
             echo "::warning file=gradle.properties::$VERSION is not a snapshot version - will not publish!"
