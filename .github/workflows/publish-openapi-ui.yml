@@ -3,14 +3,16 @@ name: publish swagger ui
 on:
   workflow_call:
     inputs:
-      api_groups:
-        required: true
-        description: "API group names"
+      version:
+        required: false
+        description: "version override"
         type: string
 
 jobs:
   generate-openapi-spec:
     runs-on: ubuntu-latest
+    outputs:
+      api_groups: ${{ steps.outputStep.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
@@ -20,13 +22,17 @@ jobs:
         with:
           name: openapi-spec
           path: resources/openapi/yaml
+      - name: get api groups and create matrix for next job
+        id: outputStep
+        run: |
+          API_GROUPS_ARRAY=$(ls -l resources/openapi/yaml | grep '^d' | awk '{print $9}' | sed ':a; N; $!ba; s/\n/","/g' | sed 's/.*/["&"]/')
+          echo "matrix={\"apiGroup\": ${API_GROUPS_ARRAY}}" >> $GITHUB_OUTPUT
 
   generate-swagger-ui:
     needs: generate-openapi-spec
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        apiGroup: ${{ fromJSON(inputs.api_groups) }}
+      matrix: ${{ fromJson(needs.generate-openapi-spec.outputs.api_groups) }}
     env:
       rootDir: resources/openapi/yaml/${{ matrix.apiGroup }}
     steps:
@@ -35,6 +41,11 @@ jobs:
         with:
           name: openapi-spec
           path: resources/openapi/yaml
+
+      - name: Override version if input is set
+        if: "${{ github.event.inputs.version != '' }}"
+        run: sed -i "s/version=.*/version=${{ github.event.inputs.version }}/g" gradle.properties
+
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       # merge together all api groups
@@ -62,6 +73,7 @@ jobs:
         with:
           name: ${{ matrix.apiGroup }}
           path: swagger-ui
+
 
   deploy-swagger-ui:
     needs: generate-swagger-ui
