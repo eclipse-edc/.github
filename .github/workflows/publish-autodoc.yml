@@ -22,7 +22,7 @@ jobs:
       - name: Generate docs
         run: ./gradlew autodoc
       - name: Merge manifests
-        run: ./gradlew mergeManifest
+        run: ./gradlew mergeManifests
       - name: Render markdown
         run: |
           ./gradlew doc2md
