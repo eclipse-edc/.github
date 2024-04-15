@@ -16,8 +16,8 @@ jobs:
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - name: Override version if input is set
-        if: "${{ github.event.inputs.version != '' }}"
-        run: sed -i "s/version=.*/version=${{ github.event.inputs.version }}/g" gradle.properties
+        if: "${{ inputs.version != '' }}"
+        run: sed -i "s/version=.*/version=${{ inputs.version }}/g" gradle.properties
 
       - name: Generate docs
         run: ./gradlew autodoc
