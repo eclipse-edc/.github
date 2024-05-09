@@ -27,6 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ORG_GITHUB_BOT_TOKEN }}
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - name: Download latest Eclipse Dash
         run: |
@@ -36,17 +38,35 @@ jobs:
           # dash returns a nonzero exit code if there are libs that need review. the "|| true" avoids that
           ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES-gen || true
 
+          # error if DEPENDENCIES is empty
+          grep -E 'maven' DEPENDENCIES-gen | if test $(wc -l) -lt 1; then
+            echo "::error file=DEPENDENCIES-gen,title=Dependencies file is corrupted, please run the workflow again"
+            exit 1
+          fi
+
           # log warning if restricted deps are found
-          grep -E 'restricted' DEPENDENCIES | if test $(wc -l) -gt 0; then
+          grep -E 'restricted' DEPENDENCIES-gen | if test $(wc -l) -gt 0; then
             echo "::warning file=DEPENDENCIES,title=Restricted Dependencies found::Some dependencies are marked 'restricted' - please review them"
           fi
 
           # log error and fail job if rejected deps are found
-          grep -E 'rejected' DEPENDENCIES | if test $(wc -l) -gt 0; then
+          grep -E 'rejected' DEPENDENCIES-gen | if test $(wc -l) -gt 0; then
             echo "::error file=DEPENDENCIES,title=Rejected Dependencies found::Some dependencies are marked 'rejected', they cannot be used"
             exit 1
           fi
+
+      - name: choose post behavior
+        run: |
+          BRANCH_NAME=${{ github.head_ref || github.ref_name }}
+          echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+          if [[ "$BRANCH_NAME" == "dependabot/gradle/"* ]]; then
+            echo "BEHAVIOR=COMMIT" >> $GITHUB_ENV
+          else
+            echo "BEHAVIOR=CHECK" >> $GITHUB_ENV
+          fi
+
       - name: Check for differences
+        if: ${{ env.BEHAVIOR == 'CHECK' }}
         run: |
           if diff DEPENDENCIES DEPENDENCIES-gen ; then
             echo "DEPENDENCIES up-do-date"
@@ -59,3 +79,15 @@ jobs:
             echo "::error file=DEPENDENCIES,title=Dependencies outdated::The DEPENDENCIES file was outdated and must be regenerated. Check the output of this job for more information"
             exit 1
           fi
+
+      - name: Update DEPENDENCIES on dependabot branches
+        if: ${{ env.BEHAVIOR == 'COMMIT' }}
+        run: |
+          mv DEPENDENCIES-gen DEPENDENCIES
+          
+          git config user.name "eclipse-edc-bot"
+          git config user.email "edc-bot@eclipse.org"
+          
+          git add DEPENDENCIES
+          git commit --message "update dependencies [skip dependabot]"
+          git push origin ${{ env.BRANCH_NAME }}
