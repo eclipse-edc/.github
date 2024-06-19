@@ -2,11 +2,6 @@ name: publish swagger ui
 
 on:
   workflow_call:
-    inputs:
-      version:
-        required: false
-        description: "version override"
-        type: string
 
 jobs:
   generate-openapi-spec:
@@ -45,9 +40,15 @@ jobs:
           name: openapi-spec
           path: resources/openapi/yaml
 
-      - name: Override version if input is set
-        if: "${{ inputs.version != '' }}"
-        run: sed -i "s/version=.*/version=${{ inputs.version }}/g" gradle.properties
+      - name: Get version from .version file
+        run: |
+          if [ -f resources/openapi/${{ matrix.apiGroup }}.version ]; then
+            VERSION=$(cat resources/openapi/${{ matrix.apiGroup }}.version | xargs cat | grep version | awk {'print $2'} | rev | cut -c3- | rev | cut -c2-)
+            sed -i "s/version=.*/version=$VERSION/g" gradle.properties
+            echo "${{ matrix.apiGroup }} will be published with version $VERSION"
+          else
+            echo "No version.json file found for ${{ matrix.apiGroup }} api context"
+          fi
 
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
