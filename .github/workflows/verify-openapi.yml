@@ -20,12 +20,12 @@ jobs:
         id: outputStep
         run: |
           if test -d resources/openapi/yaml; then
-            API_GROUPS_ARRAY=$(ls -l resources/openapi/*.version | awk '{print $9}' | awk -F "[/\.]" '{print $3}' | sed ':a; N; $!ba; s/\n/","/g' | sed 's/.*/["&"]/')
-            echo "matrix={\"apiGroup\": ${API_GROUPS_ARRAY}}" >> $GITHUB_OUTPUT
+            API_GROUPS_ARRAY=$(ls -l resources/openapi/*.version | awk '{print $9}' | awk -F "[/\.]" '{print $3}' | sed ':a; N; $!ba; s/\n/","/g' | sed 's/.*/"&"/')
+            echo "matrix={\"apiGroup\": [${API_GROUPS_ARRAY}]}" >> $GITHUB_OUTPUT
           fi
 
   verify-spec:
-    if: ${{ needs.prepare-api-groups.outputs.api_groups != '' }}
+    if: ${{ needs.prepare-api-groups.outputs.api_groups != '[]' }}
     needs: prepare-api-groups
     runs-on: ubuntu-latest
     strategy:
