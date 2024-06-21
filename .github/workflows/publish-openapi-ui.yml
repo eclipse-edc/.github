@@ -33,6 +33,7 @@ jobs:
       matrix: ${{ fromJson(needs.generate-openapi-spec.outputs.api_groups) }}
     env:
       rootDir: resources/openapi/yaml/${{ matrix.apiGroup }}
+      versionFile: resources/openapi/${{ matrix.apiGroup }}.version
     steps:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
@@ -43,7 +44,7 @@ jobs:
 
       - name: Set VERSION environment variable
         run: |
-          if [ -f resources/openapi/${{ matrix.apiGroup }}.version ]; then
+          if [ -f ${{ env.versionFile }} ]; then
             VERSION=$(cat ${{ env.versionFile }} | xargs cat | grep version | awk -F '"' '{print $4}')
             echo "${{ matrix.apiGroup }} file found. Version: $VERSION"
           else
