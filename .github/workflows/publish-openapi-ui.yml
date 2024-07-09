@@ -45,7 +45,7 @@ jobs:
       - name: Set VERSION environment variable
         run: |
           if [ -f ${{ env.versionFile }} ]; then
-            VERSION=$(cat ${{ env.versionFile }} | xargs cat | grep version | awk -F '"' '{print $4}')
+            VERSION=$(cat ${{ env.versionFile }} | xargs cat | jq '.[] | select(.maturity=="stable" or .maturity==null) | .version' | cut -d '"' -f 2)
             echo "${{ matrix.apiGroup }} file found. Version: $VERSION"
           else
             VERSION=$(grep version= gradle.properties | cut -c 9-)
