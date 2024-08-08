@@ -37,10 +37,11 @@ runs:
           INC=1
         else
           echo "$baseVersion is not a final release version (contains \"$SNAPSHOT\"), will not increase patch"
+          exit 0;
         fi
 
         # construct the new version
-        newVersion="$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$((RELEASE_VERSION_PATCH+$INC))"-SNAPSHOT
+        newVersion="$RELEASE_VERSION_MAJOR.$((RELEASE_VERSION_MINOR+$INC)).0"-SNAPSHOT
 
         # replace every occurrence of =$baseVersion with =$newVersion
         grep -rlz "$existingVersion" . --exclude=\*.{sh,bin} | xargs sed -i "s/$existingVersion/$newVersion/g"
