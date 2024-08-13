@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      branch:
+        required: true
+        type: string
+
+jobs:
+  Determine-Version:
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.get-version.outputs.VERSION }}
+    steps:
+      - name: "Get version"
+        id: get-version
+        run: |
+          echo "VERSION=$(echo ${{ inputs.branch }} | awk -F'/' '{print $2}')" >> $GITHUB_OUTPUT
+
+  Publish-Artefacts:
+    runs-on: ubuntu-latest
+    needs: [ Determine-Version ]
+    if: needs.Secrets-Presence.outputs.HAS_OSSRH
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
+
+      # Import GPG Key
+      - uses: eclipse-edc/.github/.github/actions/import-gpg-key@main
+        if: needs.Secrets-Presence.outputs.HAS_OSSRH
+        name: "Import GPG Key"
+        with:
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+      - name: "Publish To OSSRH/MavenCentral"
+        if: needs.Secrets-Presence.outputs.HAS_OSSRH
+        env:
+          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
+          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
+          VERSION: ${{ needs.Determine-Version.outputs.VERSION }}
+        run: |-
+          echo "Publishing Version $VERSION to Sonatype"
+          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
+
+  Create-Tag:
+    needs: [ Publish-Artefacts ]
+    runs-on: ubuntu-latest
+    outputs:
+      TAG: ${{ steps.set-tag.outputs.TAG }}
+    steps:
+      - shell: bash
+        id: set-tag
+        run: |
+          git config user.name "eclipse-edc-bot"
+          git config user.email "edc-bot@eclipse.org"
+          
+          TAG=v${{ needs.Determine-Version.outputs.VERSION }}
+          
+          git tag $TAG
+          git push -f origin tag $TAG
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+  Create-GitHub-Release:
+    needs: [ Create-Tag ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          tag: ${{ needs.Create-Tag.outputs.TAG }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          removeArtifacts: true
+
+  Bump-Version:
+    name: 'Update release version'
+    needs: [ Create-Tag ]
+    if: ${{ endsWith(needs.Create-Tag.outputs.TAG, '.0') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: eclipse-edc/.github/.github/actions/bump-version@main
+        with:
+          target_branch: main
+          base_version: ${{ needs.Determine-Version.outputs.VERSION }}
+
+  Post-To-Discord:
+    needs: [ Publish-Artefacts, Create-Tag ]
+    if: "always()"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        name: "Invoke discord webhook"
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_GITHUB }}
+          # if the publishing is skipped, that means the preceding test run failed
+          status: ${{ needs.Publish-Artefacts.result }}
+          title: "Release ${{ github.repository }}"
+          description: "Build and publish ${{ needs.Create-Tag.outputs.TAG }}"
+          username: GitHub Actions
+
