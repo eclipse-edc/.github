@@ -50,7 +50,7 @@ jobs:
           sed -i 's#^version=.*#version=${{ inputs.version }}#g' $(find . -name "gradle.properties")
 
           # updates the eventual core library version in the version catalog
-          sed -i 's#^edc = .*#edc = "${{ inputs.version }}"#g' gradle/libs.versions.toml
+          sed -i 's#^edc\s*=\s*.*#edc = "${{ inputs.version }}"#g' gradle/libs.versions.toml
 
       - name: Create prepare/${{ inputs.version }} branch and commit changes
         run: |
@@ -60,7 +60,7 @@ jobs:
           git checkout -b prepare/${{ inputs.version }}
           git add .
           git commit -m "Prepare ${{ steps.vars.outputs.type }} ${{ inputs.version }}"
-          git push -f origin prepare/${{ inputs.version }}
+          git push origin prepare/${{ inputs.version }}
 
       - name: Create pull request
         uses: thomaseizinger/create-pull-request@1.4.0

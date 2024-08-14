@@ -60,7 +60,7 @@ jobs:
           TAG=v${{ needs.Determine-Version.outputs.VERSION }}
           
           git tag $TAG
-          git push -f origin tag $TAG
+          git push origin tag $TAG
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
   Create-GitHub-Release:
