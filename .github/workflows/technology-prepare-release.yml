@@ -3,11 +3,6 @@ name: Prepare Release
 on:
   workflow_call:
     inputs:
-      ref:
-        description: the starting ref to create the release branch. If left empty "main" will be used.
-        required: false
-        type: string
-        default: main
       version:
         description: the version to be released. If it ends with '.0' a proper release is created, bugfix otherwise
         required: true
@@ -21,8 +16,6 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref }}
 
       - name: set release type
         shell: bash
@@ -69,10 +62,13 @@ jobs:
         with:
           head: prepare/${{ inputs.version }}
           base: ${{ steps.vars.outputs.type }}/${{ inputs.version }}
-          title: Prepare ${{ steps.vars.outputs.type }} ${{ inputs.version }}
+          title: "build: Prepare ${{ steps.vars.outputs.type }} ${{ inputs.version }}"
           reviewers: ${{ github.actor }}
           body: |-
             This PR was created in response to a manual trigger of the prepare release.
             Versions have been bumped in to ${{ inputs.version }}.
+            
+            PLEASE NOTE: you have to close the PR and re-open it in order to run the checks.
+            Details at: https://github.com/orgs/community/discussions/65321
 
-            Merging this PR will create and run a release workflow
+            Merging this PR will create a ${{ steps.vars.outputs.type }} branch for the ${{ inputs.version }} version

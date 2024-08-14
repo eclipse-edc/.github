@@ -5,9 +5,6 @@ inputs:
   version:
     description: the version to be attached to the artifacts, if not specified, the one configured in the project will be used
     required: false
-  ref:
-    description: the git ref from which the artifacts will be built and published
-    required: true
   gpg-private-key:
     description: the gpg private key used to publish
     required: true
@@ -24,10 +21,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-
   - uses: actions/checkout@v4
-    with:
-      ref: ${{ inputs.ref }}
 
   - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
