@@ -23,27 +23,14 @@ jobs:
     needs: [ Determine-Version ]
     if: needs.Secrets-Presence.outputs.HAS_OSSRH
     steps:
-      - uses: actions/checkout@v4
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
           ref: ${{ inputs.branch }}
-
-      - uses: eclipse-edc/.github/.github/actions/setup-build@main
-
-      # Import GPG Key
-      - uses: eclipse-edc/.github/.github/actions/import-gpg-key@main
-        if: needs.Secrets-Presence.outputs.HAS_OSSRH
-        name: "Import GPG Key"
-        with:
+          version: ${{ needs.Determine-Version.outputs.VERSION }}
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
-      - name: "Publish To OSSRH/MavenCentral"
-        if: needs.Secrets-Presence.outputs.HAS_OSSRH
-        env:
-          OSSRH_PASSWORD: ${{ secrets.ORG_OSSRH_PASSWORD }}
-          OSSRH_USER: ${{ secrets.ORG_OSSRH_USERNAME }}
-          VERSION: ${{ needs.Determine-Version.outputs.VERSION }}
-        run: |-
-          echo "Publishing Version $VERSION to Sonatype"
-          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository --no-parallel -Pversion=$VERSION -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
+          gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
+          osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
+          osshr-password: ${{ secrets.ORG_OSSRH_PASSWORD }}
 
   Create-Tag:
     needs: [ Publish-Artefacts ]
