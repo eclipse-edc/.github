@@ -32,7 +32,6 @@ jobs:
     steps:
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
-          ref: main
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
