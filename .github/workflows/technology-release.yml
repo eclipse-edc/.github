@@ -4,32 +4,23 @@ on:
   workflow_call:
 
 jobs:
-  Determine-Version:
-    runs-on: ubuntu-latest
-    outputs:
-      VERSION: ${{ steps.get-version.outputs.VERSION }}
-    steps:
-      - name: "Get version"
-        id: get-version
-        run: echo "VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}') " >> $GITHUB_OUTPUT
 
   Publish-Artefacts:
     runs-on: ubuntu-latest
-    needs: [ Determine-Version ]
     steps:
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
-          version: ${{ needs.Determine-Version.outputs.VERSION }}
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
           osshr-password: ${{ secrets.ORG_OSSRH_PASSWORD }}
 
   Create-Tag:
-    needs: [ Determine-Version, Publish-Artefacts ]
+    needs: [ Publish-Artefacts ]
     runs-on: ubuntu-latest
     outputs:
       TAG: ${{ steps.set-tag.outputs.TAG }}
+      VERSION: ${{ steps.set-tag.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v4
       - shell: bash
@@ -38,11 +29,13 @@ jobs:
           git config user.name "eclipse-edc-bot"
           git config user.email "edc-bot@eclipse.org"
           
-          TAG=v${{ needs.Determine-Version.outputs.VERSION }}
+          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
+          TAG=v$VERSION
           
           git tag $TAG
           git push origin tag $TAG
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
   Create-GitHub-Release:
     needs: [ Create-Tag ]
@@ -62,14 +55,14 @@ jobs:
   Bump-Version:
     name: 'Update release version'
     needs: [ Create-Tag ]
-    if: ${{ endsWith(needs.Create-Tag.outputs.TAG, '.0') }}
+    if: ${{ endsWith(needs.Create-Tag.outputs.VERSION, '.0') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/bump-version@main
         with:
           target_branch: main
-          base_version: ${{ needs.Determine-Version.outputs.VERSION }}
+          base_version: ${{ needs.Create-Tag.outputs.VERSION }}
 
   Post-To-Discord:
     needs: [ Publish-Artefacts, Create-Tag ]
