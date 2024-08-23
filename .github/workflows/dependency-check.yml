@@ -6,7 +6,7 @@ jobs:
   Review-Allowed-Licenses:
     runs-on: ubuntu-latest
     continue-on-error: false
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'pull_request_target' }}
+    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
     steps:
       - uses: actions/checkout@v4
       - name: 'Check Allowed Licenses'
@@ -25,6 +25,7 @@ jobs:
 
   Dash-Verify-Licenses:
     runs-on: ubuntu-latest
+    if: github.event_name != 'scheduled' && github.event_name != 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
