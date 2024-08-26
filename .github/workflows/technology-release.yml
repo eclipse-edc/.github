@@ -72,7 +72,7 @@ jobs:
       - uses: sarisia/actions-status-discord@v1
         name: "Invoke discord webhook"
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK_GITHUB }}
+          webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
           # if the publishing is skipped, that means the preceding test run failed
           status: ${{ needs.Publish-Artefacts.result }}
           title: "Release ${{ github.repository }}"
