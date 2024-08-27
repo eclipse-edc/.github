@@ -1,0 +1,73 @@
+name: Prepare Release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: the version to be released. If it ends with '.0' a proper release is created, bugfix otherwise
+        required: true
+        type: string
+
+jobs:
+  Prepare-Release:
+    runs-on: ubuntu-latest
+    outputs:
+      RELEASE_REF: ${{ steps.commit-changes.outputs.RELEASE_REF }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set release type
+        shell: bash
+        id: vars
+        run: |
+          type=bugfix
+          if [[ ${{ inputs.version }} == *0 ]] 
+          then
+            type=release
+          fi
+          echo "type=$type" >> $GITHUB_OUTPUT
+
+      - name: Updates version to the SNAPSHOT
+        shell: bash
+        run: |
+          SNAPSHOT_VERSION=${{ inputs.version }}-SNAPSHOT
+
+          # updates the project version
+          sed -i 's#^version=.*#version='"$SNAPSHOT_VERSION"'#g' $(find . -name "gradle.properties")
+
+          # updates the eventual core library version in the version catalog
+          sed -i 's#^edc\s*=\s*.*#edc = "'"$SNAPSHOT_VERSION"'"#g' gradle/libs.versions.toml
+
+          # updates the versions in the DEPENDENCIES file, if it exists
+          sed -i "s#maven/mavencentral/org.eclipse.edc/\(.*\)/\([^,]*\),\(.*\)#maven/mavencentral/org.eclipse.edc/\1/$SNAPSHOT_VERSION,\3#g" DEPENDENCIES || true
+
+      - name: Commit changes on ${{ steps.vars.outputs.type }}/${{ inputs.version }} branch
+        shell: bash
+        id: commit-changes
+        run: |
+          git config user.name "eclipse-edc-bot"
+          git config user.email "edc-bot@eclipse.org"
+
+          RELEASE_REF=${{ steps.vars.outputs.type }}/${{ inputs.version }}
+          git checkout -b $RELEASE_REF
+          
+          git add .
+          git commit -m "Prepare ${{ steps.vars.outputs.type }} ${{ inputs.version }}"
+          
+          git push origin $RELEASE_REF
+          echo "RELEASE_REF=$RELEASE_REF" >> $GITHUB_OUTPUT
+
+  Publish-Snapshot:
+    needs: [ Prepare-Release ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.Prepare-Release.outputs.RELEASE_REF }}
+
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+        with:
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
+          osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
+          osshr-password: ${{ secrets.ORG_OSSRH_PASSWORD }}

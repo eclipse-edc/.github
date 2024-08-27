@@ -8,6 +8,7 @@ jobs:
   Publish-Artefacts:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
