@@ -25,7 +25,7 @@ jobs:
 
   Dash-Verify-Licenses:
     runs-on: ubuntu-latest
-    if: github.event_name != 'scheduled' && github.event_name != 'workflow_dispatch'
+    if: github.event_name != 'schedule' && github.event_name != 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
