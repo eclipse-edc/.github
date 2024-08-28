@@ -37,13 +37,9 @@ jobs:
           git checkout -b ${{ steps.vars.outputs.type }}/${{ inputs.version }}
           git push -f origin ${{ steps.vars.outputs.type }}/${{ inputs.version }}
 
-      - shell: bash
-        run: |
-          # updates the project version
-          sed -i 's#^version=.*#version=${{ inputs.version }}#g' $(find . -name "gradle.properties")
-
-          # updates the eventual core library version in the version catalog
-          sed -i 's#^edc\s*=\s*.*#edc = "${{ inputs.version }}"#g' gradle/libs.versions.toml
+      - uses: eclipse-edc/.github/.github/actions/set-project-version@main
+        with:
+          version: ${{ inputs.version }}
 
       - name: Create prepare/${{ inputs.version }} branch and commit changes
         run: |
@@ -68,7 +64,7 @@ jobs:
             This PR was created in response to a manual trigger of the prepare release.
             Versions have been bumped in to ${{ inputs.version }}.
             
-            PLEASE NOTE: you have to close the PR and re-open it in order to run the checks.
+            **PLEASE NOTE: you have to close the PR and re-open it in order to run the checks.**
             Details at: https://github.com/orgs/community/discussions/65321
 
             Merging this PR will create a ${{ steps.vars.outputs.type }} branch for the ${{ inputs.version }} version

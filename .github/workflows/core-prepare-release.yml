@@ -27,19 +27,9 @@ jobs:
           fi
           echo "type=$type" >> $GITHUB_OUTPUT
 
-      - name: Updates version to the SNAPSHOT
-        shell: bash
-        run: |
-          SNAPSHOT_VERSION=${{ inputs.version }}-SNAPSHOT
-
-          # updates the project version
-          sed -i 's#^version=.*#version='"$SNAPSHOT_VERSION"'#g' $(find . -name "gradle.properties")
-
-          # updates the eventual core library version in the version catalog
-          sed -i 's#^edc\s*=\s*.*#edc = "'"$SNAPSHOT_VERSION"'"#g' gradle/libs.versions.toml
-
-          # updates the versions in the DEPENDENCIES file, if it exists
-          sed -i "s#maven/mavencentral/org.eclipse.edc/\(.*\)/\([^,]*\),\(.*\)#maven/mavencentral/org.eclipse.edc/\1/$SNAPSHOT_VERSION,\3#g" DEPENDENCIES || true
+      - uses: eclipse-edc/.github/.github/actions/set-project-version@main
+        with:
+          version: ${{ inputs.version }}-SNAPSHOT
 
       - name: Commit changes on ${{ steps.vars.outputs.type }}/${{ inputs.version }} branch
         shell: bash

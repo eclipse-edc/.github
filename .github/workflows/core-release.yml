@@ -13,23 +13,33 @@ jobs:
   create-tag:
     runs-on: ubuntu-latest
     outputs:
+      VERSION: ${{ steps.set-version.outputs.VERSION }}
       TAG: ${{ steps.set-tag.outputs.TAG }}
-      VERSION: ${{ steps.set-tag.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v4
+      - id: set-version
+        run: |
+          VERSION=$(echo ${{ github.ref }} | cut -d '/' -f 2)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - uses: eclipse-edc/.github/.github/actions/set-project-version@main
+        with:
+          version: ${{ steps.set-version.outputs.VERSION }}
       - shell: bash
         id: set-tag
         run: |
           git config user.name "eclipse-edc-bot"
           git config user.email "edc-bot@eclipse.org"
           
-          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
-          TAG=v$VERSION
-          
+          TAG=v${{ steps.set-version.outputs.VERSION }}
+
+          git add .
+          git commit -m "Release Version $TAG" 
+
           git tag $TAG
-          git push origin tag $TAG
+          git push --atomic origin ${{ github.ref }} $TAG
+          
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
   create-github-release:
     needs: [ Create-Tag ]
