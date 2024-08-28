@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      publish-autodoc:
+        type: boolean
+        description: whether publish autodoc or not
+        default: false
+
+jobs:
+
+  create-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      TAG: ${{ steps.set-tag.outputs.TAG }}
+      VERSION: ${{ steps.set-tag.outputs.VERSION }}
+    steps:
+      - uses: actions/checkout@v4
+      - shell: bash
+        id: set-tag
+        run: |
+          git config user.name "eclipse-edc-bot"
+          git config user.email "edc-bot@eclipse.org"
+          
+          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
+          TAG=v$VERSION
+          
+          git tag $TAG
+          git push origin tag $TAG
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+  create-github-release:
+    needs: [ Create-Tag ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          tag: ${{ needs.Create-Tag.outputs.TAG }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          removeArtifacts: true
+
+  publish-autodoc:
+    if: inputs.publish-autodoc == true
+    uses: eclipse-edc/.github/.github/workflows/publish-autodoc.yml@main
+    secrets: inherit

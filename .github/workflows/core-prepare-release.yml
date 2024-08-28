@@ -71,3 +71,20 @@ jobs:
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
           osshr-password: ${{ secrets.ORG_OSSRH_PASSWORD }}
+
+  Bump-Main-Version:
+    if: github.ref == 'main'
+    needs: [ Prepare-Release ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: eclipse-edc/.github/.github/actions/bump-version@main
+        with:
+          target_branch: main
+          base_version: ${{ inputs.version }}
+
+  Publish-Main-Snapshot:
+    if: github.ref == 'main'
+    needs: [ Bump-Version ]
+    uses: eclipse-edc/.github/.github/workflows/publish-snapshot.yml@main
+    secrets: inherit
