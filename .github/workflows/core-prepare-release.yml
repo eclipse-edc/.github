@@ -63,7 +63,7 @@ jobs:
           osshr-password: ${{ secrets.ORG_OSSRH_PASSWORD }}
 
   Bump-Main-Version:
-    if: github.ref == 'main'
+    if: github.ref_name == 'main'
     needs: [ Prepare-Release ]
     runs-on: ubuntu-latest
     steps:
@@ -74,7 +74,7 @@ jobs:
           base_version: ${{ inputs.version }}
 
   Publish-Main-Snapshot:
-    if: github.ref == 'main'
+    if: github.ref_name == 'main'
     needs: [ Bump-Version ]
     uses: eclipse-edc/.github/.github/workflows/publish-snapshot.yml@main
     secrets: inherit
