@@ -75,6 +75,6 @@ jobs:
 
   Publish-Main-Snapshot:
     if: github.ref_name == 'main'
-    needs: [ Bump-Version ]
+    needs: [ Bump-Main-Version ]
     uses: eclipse-edc/.github/.github/workflows/publish-snapshot.yml@main
     secrets: inherit
