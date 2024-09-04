@@ -62,7 +62,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/bump-version@main
         with:
-          target_branch: main
           base_version: ${{ needs.Create-Tag.outputs.VERSION }}
 
   Post-To-Discord:

@@ -1,10 +1,6 @@
 name: "Bump version in gradle.properties"
-description: "Increments the patch version of the version found in gradle.properties, appends -SNAPSHOT"
+description: "Increments the minor version of the version found in gradle.properties, appends -SNAPSHOT"
 inputs:
-  target_branch:
-    default: 'main'
-    description: "Branch on which the version bump is to be done."
-    required: false
   base_version:
     description: "The current version, which is to be bumped to the next snapshot"
     required: false
@@ -12,17 +8,12 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
-    - name: read version from gradle.properties
+    - name: bump current ${{ inputs.base_version }} version
       shell: bash
       run: |
         # Prepare git env
         git config user.name "eclipse-edc-bot"
         git config user.email "edc-bot@eclipse.org"
-
-        # checkout target
-        git fetch origin
-        git checkout ${{ inputs.target_branch }}
 
         # use current version from input
         baseVersion=${{ inputs.base_version }}
@@ -52,4 +43,4 @@ runs:
         git add .
         git commit --message "Bump version from $baseVersion to $newVersion [skip ci]"
 
-        git push origin ${{ inputs.target_branch }}
+        git push
