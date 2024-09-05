@@ -53,19 +53,36 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           removeArtifacts: true
 
-  Bump-Version:
-    name: 'Update release version'
+  Bump-Snapshot-Version:
+    if: endsWith(needs.Create-Tag.outputs.VERSION, '.0')
     needs: [ Create-Tag ]
-    if: ${{ endsWith(needs.Create-Tag.outputs.VERSION, '.0') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: eclipse-edc/.github/.github/actions/bump-version@main
         with:
           base_version: ${{ needs.Create-Tag.outputs.VERSION }}
 
+  Publish-New-Snapshot:
+    if: endsWith(needs.Create-Tag.outputs.VERSION, '.0')
+    needs: [ Bump-Snapshot-Version ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+        with:
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
+          osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
+          osshr-password: ${{ secrets.ORG_OSSRH_PASSWORD }}
+
   Post-To-Discord:
-    needs: [ Publish-Artefacts, Create-Tag ]
+    needs: [ Publish-Artefacts, Create-Tag, Create-GitHub-Release ]
     if: "always()"
     runs-on: ubuntu-latest
     steps:
