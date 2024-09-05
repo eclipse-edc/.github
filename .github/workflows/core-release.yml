@@ -58,5 +58,12 @@ jobs:
 
   publish-autodoc:
     if: inputs.publish-autodoc == true
-    uses: eclipse-edc/.github/.github/workflows/publish-autodoc.yml@main
-    secrets: inherit
+    needs: [ Create-Tag ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: eclipse-edc/.github/.github/actions/publish-autodoc@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

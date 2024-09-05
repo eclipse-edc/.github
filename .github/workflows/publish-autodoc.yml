@@ -13,34 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: eclipse-edc/.github/.github/actions/setup-build@main
-
-      - name: Override version if input is set
-        if: "${{ inputs.version != '' }}"
-        run: sed -i "s/version=.*/version=${{ inputs.version }}/g" gradle.properties
-
-      - name: Generate docs
-        run: ./gradlew autodoc
-      - name: Merge manifests
-        run: ./gradlew mergeManifests
-      - name: Render markdown
-        run: ./gradlew doc2html
-
-      - name: extract version
-        run: echo "VERSION=$(grep version= gradle.properties | cut -c 9-)" >> $GITHUB_ENV
-
-      - name: Prepare deploy folder
-        run: |
-          mkdir -p deploy/autodoc/${{ env.VERSION }}
-          cp build/*.html deploy/autodoc/${{ env.VERSION }}/index.html
-
-      - name: Render html for stable version
-        if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
-        run: cp deploy/autodoc/${{ env.VERSION }}/index.html deploy/autodoc/index.html
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - uses: eclipse-edc/.github/.github/actions/publish-autodoc@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: deploy
-          keep_files: true
+          token: ${{ secrets.GITHUB_TOKEN }}

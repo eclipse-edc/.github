@@ -1,0 +1,53 @@
+name: "Publish Autodoc"
+description: "Build and publish autodoc to github pages"
+
+inputs:
+  version:
+    description: the version to be attached to the autodoc, if not specified, the one configured in the project will be used
+    required: false
+  token:
+    description: the github token used for publication
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: eclipse-edc/.github/.github/actions/setup-build@main
+
+    - name: Override version if input is set
+      shell: bash
+      if: "${{ inputs.version != '' }}"
+      run: sed -i "s/version=.*/version=${{ inputs.version }}/g" gradle.properties
+
+    - name: Generate docs
+      shell: bash
+      run: ./gradlew autodoc
+    - name: Merge manifests
+      shell: bash
+      run: ./gradlew mergeManifests
+    - name: Render markdown
+      shell: bash
+      run: ./gradlew doc2html
+
+    - name: extract version
+      shell: bash
+      run: echo "VERSION=$(grep version= gradle.properties | cut -c 9-)" >> $GITHUB_ENV
+
+    - name: Prepare deploy folder
+      shell: bash
+      run: |
+        mkdir -p deploy/autodoc/${{ env.VERSION }}
+        cp build/*.html deploy/autodoc/${{ env.VERSION }}/index.html
+
+    - name: Render html for stable version
+      shell: bash
+      if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
+      run: cp deploy/autodoc/${{ env.VERSION }}/index.html deploy/autodoc/index.html
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ inputs.token }}
+        publish_dir: deploy
+        keep_files: true
+ 

@@ -67,4 +67,5 @@ jobs:
             **PLEASE NOTE: you have to close the PR and re-open it in order to run the checks.**
             Details at: https://github.com/orgs/community/discussions/65321
 
-            Merging this PR will create a ${{ steps.vars.outputs.type }} branch for the ${{ inputs.version }} version
+            Merging this PR will create a ${{ steps.vars.outputs.type }} branch for the ${{ inputs.version }} version.
+            Release workflow will need to be triggered manually.
