@@ -50,9 +50,11 @@ jobs:
       needs.Secrets-Presence.outputs.HAS_OSSRH
     steps:
       - uses: actions/checkout@v4
-      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+      - uses: eclipse-edc/.github/.github/actions/set-project-version@main
         with:
           version: ${{ needs.Determine-Version.outputs.VERSION }}
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+        with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
