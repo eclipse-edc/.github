@@ -22,11 +22,7 @@ jobs:
   Publish-Snapshot:
     name: "Publish artefacts to OSSRH Snapshots"
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     needs: [ secrets-presence ]
-
     if: |
       needs.secrets-presence.outputs.HAS_OSSRH
     steps:
