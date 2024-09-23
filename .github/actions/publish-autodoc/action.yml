@@ -25,9 +25,12 @@ runs:
     - name: Merge manifests
       shell: bash
       run: ./gradlew mergeManifests
-    - name: Render markdown
+    - name: Render html
       shell: bash
       run: ./gradlew doc2html
+    - name: Render markdown
+      shell: bash
+      run: ./gradlew doc2md
 
     - name: extract version
       shell: bash
@@ -37,12 +40,15 @@ runs:
       shell: bash
       run: |
         mkdir -p deploy/autodoc/${{ env.VERSION }}
+        cp build/*.json deploy/autodoc/${{ env.VERSION }}/autodoc.json
+        cp build/*.md deploy/autodoc/${{ env.VERSION }}/autodoc.md
         cp build/*.html deploy/autodoc/${{ env.VERSION }}/index.html
 
     - name: Render html for stable version
       shell: bash
       if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
-      run: cp deploy/autodoc/${{ env.VERSION }}/index.html deploy/autodoc/index.html
+      run: | 
+        cp deploy/autodoc/${{ env.VERSION }}/* deploy/autodoc/
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4

@@ -50,7 +50,7 @@ jobs:
           fi
 
           VERSION=$(cat $JSON_VERSION_FILE | jq '.[] | select(.maturity=="stable" or .maturity==null) | .version' | cut -d '"' -f 2)
-          ./gradlew -PapiVersion=$VERSION -PapiTitle="${{ matrix.apiGroup }}" -PapiDescription="REST API documentation for the ${{ matrix.apiGroup }}" :mergeApiSpec --input=resources/openapi/yaml/${{ matrix.apiGroup }} --output=${{ matrix.apiGroup }}-new.yaml -q
+          ./gradlew -PapiVersion=$VERSION -PapiTitle="${{ matrix.apiGroup }}" -PapiDescription="REST API documentation for the ${{ matrix.apiGroup }}" :mergeApiSpec --input=resources/openapi/yaml/${{ matrix.apiGroup }} --output=${{ matrix.apiGroup }}-new.yaml
           
           git show origin/gh-pages:openapi/${{ matrix.apiGroup }}/${{ matrix.apiGroup }}.yaml > ${{ matrix.apiGroup }}.yaml
           
