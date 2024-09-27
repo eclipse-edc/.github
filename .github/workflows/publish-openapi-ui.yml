@@ -62,6 +62,7 @@ jobs:
         with:
           output: swagger-ui/${{ env.VERSION }}
           spec-file: ${{ matrix.apiGroup }}.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Generate Swagger UI stable version
         uses: Legion2/swagger-ui-action@v1
@@ -69,6 +70,7 @@ jobs:
         with:
           output: swagger-ui
           spec-file: ${{ matrix.apiGroup }}.yaml
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/upload-artifact@v4
         with:
