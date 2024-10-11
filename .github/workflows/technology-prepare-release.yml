@@ -9,7 +9,20 @@ on:
         type: string
 
 jobs:
+  Dependency-Validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout$4
+      - name: check for restricted / rejected dependencies
+        run: |
+          grep -hs -e restricted -e rejected DEPENDENCIES > unacceptable-dependencies
+          if [ -s unacceptable-dependencies ]; then
+            echo "Some dependencies are not in the expected status:"
+            cat unacceptable-dependencies
+          fi
+
   Prepare-Release:
+    needs: [ Dependency-Validation ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
