@@ -9,7 +9,7 @@ on:
         type: string
 
 jobs:
-  Checks:
+  Dependency-Validation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout$4
@@ -22,7 +22,7 @@ jobs:
           fi
 
   Prepare-Release:
-    needs: [ Checks ]
+    needs: [ Dependency-Validation ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
