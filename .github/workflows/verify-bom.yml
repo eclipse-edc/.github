@@ -1,0 +1,49 @@
+name: verify BOM project
+
+on:
+  workflow_call:
+    inputs:
+      module-dir:
+        required: true
+        type: string
+        description: the directory path of the BOM module relative to the project root, e.g. "foo/bar/some/bom"
+      properties-file:
+        required: false
+        type: string
+        default: example.properties
+        description: the name of the *.properties file relative to the "module-dir"
+      timeout-minutes:
+        required: false
+        description: Timeout after which the workflow fails
+        type: number
+        default: 10
+
+jobs:
+  Verify-BOM:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
+      - name: Build runtime
+        run: ./gradlew -p ${{ inputs.module-dir }} build
+      - name: Smoke Test
+        timeout-minutes: ${{ inputs.timeout-minutes }}
+        run: |
+          # Start the program in the background
+          java -Dedc.fs.config=${{ inputs.module-dir }}/${{ inputs.properties-file }} -cp "$(./gradlew -q -p ${{ inputs.module-dir }} printClassPath)" org.eclipse.edc.boot.system.runtime.BaseRuntime > ${{ inputs.module-dir }}/log.txt &
+
+          # Get the PID of the running command
+          PID=$!
+
+          # Monitor the output and kill the process when desired output is found
+          while :; do
+            # Capture the output of the command
+            cat ${{ inputs.module-dir }}/log.txt 2>/dev/null | grep -q "Runtime .* ready" && break
+            sleep 1
+          done
+
+          # Kill the process once the output is detected
+          kill $PID
+          echo "Runtime ${{ inputs.module-dir }} shutdown after ready signal detected."
+          rm ${{ inputs.module-dir }}/log.txt
