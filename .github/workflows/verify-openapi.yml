@@ -57,7 +57,7 @@ jobs:
           diff ${{ matrix.apiGroup }}.yaml ${{ matrix.apiGroup }}-new.yaml > diff
           
           if [ -s diff ]; then
-              echo "${{ matrix.apiGroup }} openapi spec diverges from the published one, please update the version.json file"
-              cat diff
-              exit 1
+              echo "${{ matrix.apiGroup }} openapi spec diverges from the published one, please update the version.json file";
+              cat diff;
+              exit 1;
           fi
