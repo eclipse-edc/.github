@@ -18,6 +18,3 @@ runs:
         
         # updates the eventual core library version in the version catalog
         sed -i 's#^edc\s*=\s*.*#edc = "'"${{ inputs.version }}"'"#g' gradle/libs.versions.toml
-        
-        # updates the versions in the DEPENDENCIES file, if it exists
-        sed -i "s#maven/mavencentral/org.eclipse.edc/\(.*\)/\([^,]*\),\(.*\)#maven/mavencentral/org.eclipse.edc/\1/${{ inputs.version }},\3#g" DEPENDENCIES || true

@@ -9,20 +9,8 @@ on:
         type: string
 
 jobs:
-  Dependency-Validation:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout$4
-      - name: check for restricted / rejected dependencies
-        run: |
-          grep -hs -e restricted -e rejected DEPENDENCIES > unacceptable-dependencies
-          if [ -s unacceptable-dependencies ]; then
-            echo "Some dependencies are not in the expected status:"
-            cat unacceptable-dependencies
-          fi
 
   Prepare-Release:
-    needs: [ Dependency-Validation ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -49,6 +37,13 @@ jobs:
           
           git checkout -b ${{ steps.vars.outputs.type }}/${{ inputs.version }}
           git push -f origin ${{ steps.vars.outputs.type }}/${{ inputs.version }}
+
+      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
+        with:
+          run: strict
+
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
 
       - uses: eclipse-edc/.github/.github/actions/set-project-version@main
         with:
