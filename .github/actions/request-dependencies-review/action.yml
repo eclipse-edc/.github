@@ -1,0 +1,15 @@
+name: "Request DEPENDENCIES review"
+description: "Request DEPENDENCIES review for restricted dependencies"
+
+inputs:
+  gitlab-token:
+    description: gitlab token
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
+    - shell: bash
+      run: |
+        cat DEPENDENCIES* | grep restricted | sort -u | awk -F ',' '{print $1}' | java -jar dash.jar - -review -project technology.edc -token ${{ inputs.gitlab-token }} || true

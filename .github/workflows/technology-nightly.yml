@@ -45,9 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
-      - run: |
-          cat DEPENDENCIES* | grep restricted | sort -u | awk -F ',' '{print $1}' | java -jar dash.jar - -review -project technology.edc -token ${{ secrets.GITLAB_API_TOKEN }} || true
+      - uses: eclipse-edc/.github/.github/actions/request-dependencies-review@main
+        with:
+          gitlab-token: ${{ secrets.GITLAB_API_TOKEN }}
 
   Post-To-Discord:
     needs: [ Publish-Artefacts, Determine-Version, Dependency-Review ]
