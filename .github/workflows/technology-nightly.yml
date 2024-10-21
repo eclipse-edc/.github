@@ -58,6 +58,7 @@ jobs:
         name: "Invoke discord webhook"
         with:
           webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
+          status: ${{ needs.Publish-Artefacts.result == 'skipped' && 'Failure' || needs.Publish-Artefacts.result }}
           title: "Nightly ${{ github.repository }} build"
           description: "Build and publish ${{ needs.Determine-Version.outputs.VERSION }}"
           username: GitHub Actions
