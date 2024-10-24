@@ -9,8 +9,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v4
-    - name: read version from gradle.properties
+    - name: set version to gradle.properties and in the version catalog
       shell: bash
       run: |
         # updates the project version
