@@ -42,7 +42,7 @@ runs:
           fi
         fi
         
-        rm RESTRICTED
+        rm RESTRICTED || true
 
         grep "rejected" DEPENDENCIES || true > REJECTED;
         if [ -s REJECTED ];
@@ -52,4 +52,4 @@ runs:
           exit 1;
         fi
         
-        rm REJECTED
+        rm REJECTED || true
