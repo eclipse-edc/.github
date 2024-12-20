@@ -10,36 +10,33 @@ on:
 
 jobs:
 
-  Determine-Version:
-    if: always()
+  Publish-Artefacts:
     runs-on: ubuntu-latest
-    outputs:
-      VERSION: ${{ steps.get-version.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v4
-      - name: "Get version"
-        id: get-version
+      - id: get-version
         run: |
           if [ -z ${{ inputs.version }} ]; then
             echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
           else
             echo "VERSION=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
           fi
-
-  Publish-Artefacts:
-    runs-on: ubuntu-latest
-    needs: [ Determine-Version ]
-    steps:
-      - uses: actions/checkout@v4
       - uses: eclipse-edc/.github/.github/actions/set-project-version@main
         with:
-          version: ${{ needs.Determine-Version.outputs.VERSION }}
+          version: ${{ steps.get-version.outputs.VERSION }}
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           osshr-username: ${{ secrets.ORG_OSSRH_USERNAME }}
           osshr-password: ${{ secrets.ORG_OSSRH_PASSWORD }}
+      - uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
+          title: "Nightly ${{ github.repository }} build"
+          description: "Build and publish ${{ steps.get-version.outputs.VERSION }}"
+          username: GitHub Actions
 
   Dependency-Review:
     runs-on: ubuntu-latest
@@ -48,17 +45,3 @@ jobs:
       - uses: eclipse-edc/.github/.github/actions/request-dependencies-review@main
         with:
           gitlab-token: ${{ secrets.GITLAB_API_TOKEN }}
-
-  Post-To-Discord:
-    needs: [ Publish-Artefacts, Determine-Version, Dependency-Review ]
-    if: "always()"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: sarisia/actions-status-discord@v1
-        name: "Invoke discord webhook"
-        with:
-          webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
-          status: ${{ needs.Publish-Artefacts.result == 'skipped' && 'Failure' || needs.Publish-Artefacts.result }}
-          title: "Nightly ${{ github.repository }} build"
-          description: "Build and publish ${{ needs.Determine-Version.outputs.VERSION }}"
-          username: GitHub Actions
