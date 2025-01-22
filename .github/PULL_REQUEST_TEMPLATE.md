@@ -11,6 +11,12 @@ _Briefly state why the change was necessary._
 _List other areas of code that have changed but are not necessarily linked to the main feature. This could be method
 signature changes, package declarations, bugs that were encountered and were fixed inline, etc._
 
+
+## Who will sponsor this feature?
+
+_Please @-mention the committer that will sponsor your feature_.
+
+
 ## Linked Issue(s)
 
 Closes # <-- _insert Issue number if one exists_
