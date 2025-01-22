@@ -20,6 +20,10 @@ _e.g., DPF, CI, build, transfer, etc._
 
 _Are there any requirements?_
 
+## Who will sponsor this feature?
+
+_Please @-mention the committer that will sponsor your feature_.
+
 ## Solution Proposal
 
 _If possible, provide a (brief!) solution proposal._
