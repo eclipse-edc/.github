@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  workflow_call:
+
+jobs:
+
+  Release:
+    runs-on: ubuntu-latest
+    outputs:
+      TAG: ${{ steps.set-tag.outputs.TAG }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
+        with:
+          run: strict
+
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+        with:
+          gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
+          username: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+          password: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+
+      - shell: bash
+        id: set-tag
+        run: |
+          git config user.name "eclipse-edc-bot"
+          git config user.email "edc-bot@eclipse.org"
+
+          version=$(grep "version" gradle.properties | awk -F= '{print $2}')
+          TAG=v${{ version }}
+
+          git add .
+          git diff-index --quiet HEAD || git commit -m "Release Version $TAG" 
+
+          git tag $TAG
+          git push --atomic origin ${{ github.ref_name }} $TAG
+
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+
+  Create-GitHub-Release:
+    needs: [ Release ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          generateReleaseNotes: true
+          tag: ${{ needs.Release.outputs.TAG }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          removeArtifacts: true
+
+  Post-To-Discord:
+    needs: [ Release, Create-GitHub-Release ]
+    if: "always()"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: sarisia/actions-status-discord@v1
+        name: "Invoke discord webhook"
+        with:
+          webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
+          # if the publishing is skipped, that means the preceding test run failed
+          status: ${{ needs.Release.result }}
+          title: "Release ${{ github.repository }} ${{ needs.Release.outputs.TAG }}"
+          username: GitHub Actions
+
