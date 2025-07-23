@@ -2,6 +2,11 @@ name: Release
 
 on:
   workflow_call:
+    inputs:
+      publish-autodoc:
+        type: boolean
+        description: whether publish autodoc or not
+        default: false
 
 jobs:
 
@@ -54,6 +59,18 @@ jobs:
           tag: ${{ needs.Release.outputs.TAG }}
           token: ${{ secrets.GITHUB_TOKEN }}
           removeArtifacts: true
+
+  Publish-Autodoc:
+    if: inputs.publish-autodoc == true
+    needs: [ Release ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: eclipse-edc/.github/.github/actions/publish-autodoc@main
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   Post-To-Discord:
     needs: [ Release, Create-GitHub-Release ]
