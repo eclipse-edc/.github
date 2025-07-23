@@ -17,6 +17,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - id: set-version
+        run: |
+          VERSION=$(echo ${{ github.ref_name }} | cut -d '/' -f 2)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+
+      - uses: eclipse-edc/.github/.github/actions/set-project-version@main
+        with:
+          version: ${{ steps.set-version.outputs.VERSION }}
+
       - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
         with:
           run: strict
@@ -34,8 +43,7 @@ jobs:
           git config user.name "eclipse-edc-bot"
           git config user.email "edc-bot@eclipse.org"
 
-          version=$(grep "version" gradle.properties | awk -F= '{print $2}')
-          TAG=v${{ version }}
+          TAG=v${{ steps.set-version.outputs.VERSION }}
 
           git add .
           git diff-index --quiet HEAD || git commit -m "Release Version $TAG" 

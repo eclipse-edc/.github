@@ -33,7 +33,7 @@ jobs:
 
       - uses: eclipse-edc/.github/.github/actions/set-project-version@main
         with:
-          version: ${{ inputs.version }}
+          version: ${{ inputs.version }}-SNAPSHOT
 
       - name: Commit changes on ${{ steps.vars.outputs.type }}/${{ inputs.version }} branch
         shell: bash
@@ -43,10 +43,13 @@ jobs:
           git config user.email "edc-bot@eclipse.org"
 
           RELEASE_REF=${{ steps.vars.outputs.type }}/${{ inputs.version }}
-          git checkout -b $RELEASE_REF
+          git checkout -B $RELEASE_REF
           
           git add .
-          git commit -m "Prepare ${{ steps.vars.outputs.type }} ${{ inputs.version }}"
+          git commit --allow-empty -m "Prepare ${{ steps.vars.outputs.type }} ${{ inputs.version }}"
+          
+          # handle the case in which the branch already exist
+          git pull --rebase origin $RELEASE_REF || true 
           
           git push origin $RELEASE_REF
           echo "RELEASE_REF=$RELEASE_REF" >> $GITHUB_OUTPUT
