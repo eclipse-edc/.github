@@ -26,16 +26,25 @@ jobs:
         with:
           version: ${{ steps.set-version.outputs.VERSION }}
 
-      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
-        with:
-          run: strict
+#     TODO: disabled for time being in releasing 0.13.x, to be re-enabled
+#      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
+#        with:
+#          run: strict
 
-      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+      - uses: eclipse-edc/.github/.github/actions/import-gpg-key@main
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
-          gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
-          username: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
-          password: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+
+      - name: Release to maven central
+        shell: bash
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.ORG_GPG_PASSPHRASE }}
+        run: |- 
+          ./gradlew publishToMavenCentral -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ secrets.ORG_GPG_PASSPHRASE }}"
 
       - shell: bash
         id: set-tag
