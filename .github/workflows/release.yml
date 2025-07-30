@@ -26,10 +26,11 @@ jobs:
         with:
           version: ${{ steps.set-version.outputs.VERSION }}
 
-#     TODO: disabled for time being in releasing 0.13.x, to be re-enabled
-#      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
-#        with:
-#          run: strict
+      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
+        with:
+          run: strict
+
+      - run: ./gradlew build -DrunAllTests=true
 
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
