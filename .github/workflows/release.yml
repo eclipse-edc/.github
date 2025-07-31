@@ -86,6 +86,16 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+  Wait-For-Published-Artifact:
+    needs: [ Release ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
+      - run: ./gradlew waitForPublishedArtifacts
+
   Post-To-Discord:
     needs: [ Release, Create-GitHub-Release ]
     if: "always()"
