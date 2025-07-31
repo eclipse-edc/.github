@@ -2,6 +2,11 @@ name: Nightly
 
 on:
   workflow_call:
+    inputs:
+      test-tag-exclusions:
+        description: specific test tags separated by comma (,) that are not supposed to run in the standard test suite can be excluded
+        type: string
+        required: false
 
 jobs:
 
@@ -16,7 +21,7 @@ jobs:
         with:
           version: ${{ steps.get-version.outputs.VERSION }}
 
-      - run: ./gradlew build -DrunAllTests=true
+      - run: ./gradlew compileJava build -DrunAllTests=true -DexcludeTags=${{ inputs.test-tag-exclusions }}
 
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
