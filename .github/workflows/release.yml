@@ -30,6 +30,9 @@ jobs:
         with:
           version: ${{ steps.set-version.outputs.VERSION }}
 
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
+
       - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
         with:
           run: strict

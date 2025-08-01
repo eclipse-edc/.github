@@ -28,9 +28,6 @@ jobs:
           fi
           echo "type=$type" >> $GITHUB_OUTPUT
 
-      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
-        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-
       - uses: eclipse-edc/.github/.github/actions/set-project-version@main
         with:
           version: ${{ inputs.version }}-SNAPSHOT
