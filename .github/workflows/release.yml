@@ -19,7 +19,7 @@ jobs:
     outputs:
       TAG: ${{ steps.set-tag.outputs.TAG }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - id: set-version
         run: |
@@ -68,7 +68,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Create GitHub Release
         uses: ncipollo/release-action@v1
         with:
@@ -82,7 +82,7 @@ jobs:
     needs: [ Release ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref_name }}
       - uses: eclipse-edc/.github/.github/actions/publish-autodoc@main
@@ -93,7 +93,7 @@ jobs:
     needs: [ Release ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.ref_name }}
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
