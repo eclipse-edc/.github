@@ -13,7 +13,7 @@ jobs:
   Publish-Artefacts:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: get-version
         run: |
             echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
@@ -41,7 +41,7 @@ jobs:
   Dependency-Review:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: gh-pages
       - run: cat DEPENDENCIES* | grep restricted | sort -u | awk -F ',' '{print $1}' | java -jar dash.jar - -review -project technology.edc -token ${{ secrets.GITLAB_API_TOKEN }} || true
