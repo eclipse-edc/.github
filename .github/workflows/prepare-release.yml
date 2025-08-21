@@ -59,6 +59,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - uses: eclipse-edc/.github/.github/actions/bump-version@main
         with:
           base_version: ${{ inputs.version }}
@@ -77,7 +78,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ needs.Prepare-Release.outputs.RELEASE_REF }}
-
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
