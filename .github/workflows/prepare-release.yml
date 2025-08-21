@@ -15,7 +15,7 @@ jobs:
     outputs:
       RELEASE_REF: ${{ steps.commit-changes.outputs.RELEASE_REF }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: set release type
         shell: bash
@@ -56,7 +56,7 @@ jobs:
     needs: [ Prepare-Release ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: main
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
@@ -75,7 +75,7 @@ jobs:
     needs: [ Prepare-Release ]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ needs.Prepare-Release.outputs.RELEASE_REF }}
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
