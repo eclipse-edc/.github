@@ -55,7 +55,7 @@ jobs:
 
       - name: Generate API Specs
         run: |
-          ./gradlew -PapiVersion=${{ env.VERSION }} -PapiTitle="${{ matrix.apiGroup }}" -PapiDescription="REST API documentation for the ${{ matrix.apiGroup }}" :mergeApiSpec --input=${{ env.rootDir }} --output=${{ matrix.apiGroup }}.yaml
+          ./gradlew mergeOpenApiSpec --inputDir=${PWD}/${{ env.rootDir }} --output=${{ matrix.apiGroup }}.yaml --infoTitle="${{ matrix.apiGroup }}" --infoDescription="REST API documentation for the ${{ matrix.apiGroup }}" --infoVersion=${{ env.VERSION }}
 
       - name: Generate Swagger UI current version
         uses: Legion2/swagger-ui-action@v1
