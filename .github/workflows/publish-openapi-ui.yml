@@ -85,6 +85,7 @@ jobs:
         with:
           path: openapi
           pattern: "*-api"
+          merge-multiple: true
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
