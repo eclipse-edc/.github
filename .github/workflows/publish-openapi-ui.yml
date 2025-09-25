@@ -60,7 +60,7 @@ jobs:
       - name: Generate Swagger UI current version
         uses: Legion2/swagger-ui-action@v1
         with:
-          output: swagger-ui/${{ env.VERSION }}
+          output: swagger-ui/${{ matrix.apiGroup }}/${{ env.VERSION }}
           spec-file: ${{ matrix.apiGroup }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -68,7 +68,7 @@ jobs:
         uses: Legion2/swagger-ui-action@v1
         if: ${{ !endsWith( env.VERSION, '-SNAPSHOT') }}
         with:
-          output: swagger-ui
+          output: swagger-ui/${{ matrix.apiGroup }}
           spec-file: ${{ matrix.apiGroup }}.yaml
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
