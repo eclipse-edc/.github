@@ -37,7 +37,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: openapi-spec
           path: resources/openapi/yaml
@@ -81,7 +81,7 @@ jobs:
     needs: generate-swagger-ui
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           path: openapi
           pattern: "*-api"
