@@ -9,7 +9,7 @@ jobs:
     outputs:
       api_groups: ${{ steps.outputStep.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - run: ./gradlew resolve
       - uses: actions/upload-artifact@v5
@@ -33,7 +33,7 @@ jobs:
     env:
       versionFile: resources/openapi/${{ matrix.apiGroup }}.version
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
