@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - run: ./gradlew resolve
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: openapi-spec
           path: resources/openapi/yaml
