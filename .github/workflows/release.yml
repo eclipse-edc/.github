@@ -63,8 +63,18 @@ jobs:
 
           echo "TAG=$TAG" >> $GITHUB_OUTPUT
 
-  Create-GitHub-Release:
+  Wait-For-Published-Artifact:
     needs: [ Release ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
+      - run: ./gradlew waitForPublishedArtifacts
+
+  Create-GitHub-Release:
+    needs: [ Release, Wait-For-Published-Artifact ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -80,7 +90,7 @@ jobs:
 
   Publish-Autodoc:
     if: inputs.publish-autodoc == true
-    needs: [ Release ]
+    needs: [ Wait-For-Published-Artifact ]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -90,18 +100,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-  Wait-For-Published-Artifact:
-    needs: [ Release ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.ref_name }}
-      - uses: eclipse-edc/.github/.github/actions/setup-build@main
-      - run: ./gradlew waitForPublishedArtifacts
-
   Post-To-Discord:
-    needs: [ Release, Create-GitHub-Release ]
+    needs: [ Release, Create-GitHub-Release, Wait-For-Published-Artifact ]
     if: "always()"
     runs-on: ubuntu-latest
     steps:
