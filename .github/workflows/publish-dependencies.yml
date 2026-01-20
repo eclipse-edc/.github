@@ -23,15 +23,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: public
           keep_files: true
-
-  Post-To-Discord:
-    needs: [ publish-dependencies ]
-    if: "failure()"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: sarisia/actions-status-discord@v1
-        with:
-          webhook: ${{ secrets.DISCORD_GITHUB_CI_WEBHOOK }}
-          status: ${{ needs.publish-dependencies.result }}
-          title: "Generate ${{ github.repository }} dependencies"
-          username: GitHub Actions
