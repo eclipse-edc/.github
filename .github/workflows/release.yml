@@ -80,13 +80,9 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v6
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
-        with:
-          generateReleaseNotes: true
-          tag: ${{ needs.Release.outputs.TAG }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-          removeArtifacts: true
+      - run: |
+          latest=$(gh release view --json tagName | jq -r '.tagName')
+          gh release create ${{ needs.Release.outputs.TAG }} --latest --generate-notes --notes-start-tag $latest
 
   Publish-Autodoc:
     if: inputs.publish-autodoc == true
