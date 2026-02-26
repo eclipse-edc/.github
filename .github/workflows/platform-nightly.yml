@@ -1,4 +1,4 @@
-name: Nightly
+name: Platform Nightly
 
 on:
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
       - name: "Extract version"
         id: get-version
         run: |
-          wget -cq https://raw.githubusercontent.com/eclipse-edc/Connector/main/gradle.properties 
+          wget -cq https://raw.githubusercontent.com/eclipse-edc/Connector/main/gradle.properties
           echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
 
   Runtime-Metamodel:
