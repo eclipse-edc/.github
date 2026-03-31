@@ -10,12 +10,24 @@ jobs:
   add-comment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/first-interaction@1c4688942c71f71d4f5502a26ea67c331730fa4d # v3
-        with:
-          repo_token: ${{ secrets.envGH }}
-          issue_message: 'Thanks for your contribution :fire: We will take a look asap :rocket:'
-          pr_message: >-
-            We are always happy to welcome new contributors :heart: To make things easier for everyone, please
-            make sure to follow our [contributors manual](https://eclipse-edc.github.io/documentation/for-contributors/),
-            check if you have already signed the [ECA](http://www.eclipse.org/legal/ecafaq.php), and
-            relate this pull request to an existing issue or discussion.
+      - name: Welcome first-time PR contributor
+        if: github.event.pull_request.number != ''
+        env:
+          GH_TOKEN: ${{ secrets.envGH }}
+        run: |
+          COUNT=$(gh pr list --repo ${{ github.repository }} --state all --author "${{ github.event.pull_request.user.login }}" --json "id" --jq "length")
+          if [ "$COUNT" -le 1 ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" \
+              --body "We are always happy to welcome new contributors :heart: To make things easier for everyone, please make sure to follow our [contributors manual](https://eclipse-edc.github.io/documentation/for-contributors/), check if you have already signed the [ECA](http://www.eclipse.org/legal/ecafaq.php), and relate this pull request to an existing issue or discussion."
+          fi
+
+      - name: Welcome first-time issue contributor
+        if: github.event.issue.number != '' && github.event.pull_request.number == ''
+        env:
+          GH_TOKEN: ${{ secrets.envGH }}
+        run: |
+          COUNT=$(gh issue list --repo ${{ github.repository }} --state all --author "${{ github.event.issue.user.login }}" --json "id" --jq "length")
+          if [ "$COUNT" -le 1 ]; then
+            gh issue comment "${{ github.event.issue.number }}" --repo "${{ github.repository }}" \
+              --body "Thanks for your contribution :fire: We will take a look asap :rocket:"
+          fi
