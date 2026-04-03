@@ -14,17 +14,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - id: get-version
         run: |
             echo "VERSION=$(IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<$(grep "version" gradle.properties | awk -F= '{print $2}') && echo $RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH-$(date +"%Y%m%d")-SNAPSHOT)" >> "$GITHUB_OUTPUT"
-      - uses: ./.github/actions/set-project-version
+      - uses: eclipse-edc/.github/.github/actions/set-project-version@main
         with:
           version: ${{ steps.get-version.outputs.VERSION }}
 
       - run: ./gradlew compileJava build -DrunAllTests=true -DexcludeTags=${{ inputs.test-tag-exclusions }}
 
-      - uses: ./.github/actions/publish-maven-artifacts
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}

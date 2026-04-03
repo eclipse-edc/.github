@@ -20,27 +20,27 @@ jobs:
       TAG: ${{ steps.set-tag.outputs.TAG }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
 
       - id: set-version
         run: |
           VERSION=$(echo ${{ github.ref_name }} | cut -d '/' -f 2)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
-      - uses: ./.github/actions/set-project-version
+      - uses: eclipse-edc/.github/.github/actions/set-project-version@main
         with:
           version: ${{ steps.set-version.outputs.VERSION }}
 
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
 
-      - uses: ./.github/actions/generate-dependencies-file
+      - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
         with:
           run: strict
 
       - run: ./gradlew compileJava build -DrunAllTests=true -DexcludeTags=${{ inputs.test-tag-exclusions }}
 
-      - uses: ./.github/actions/publish-maven-artifacts
+      - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ github.ref_name }}
-      - uses: ./.github/actions/setup-build
+      - uses: eclipse-edc/.github/.github/actions/setup-build@main
       - run: ./gradlew waitForPublishedArtifacts
 
   Create-GitHub-Release:
@@ -94,7 +94,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           ref: ${{ github.ref_name }}
-      - uses: ./.github/actions/publish-autodoc
+      - uses: eclipse-edc/.github/.github/actions/publish-autodoc@main
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
