@@ -14,12 +14,12 @@ runs:
     - name: Download latest Eclipse Dash
       shell: bash
       run: |
-        curl -L https://repo.eclipse.org/service/local/artifact/maven/redirect\?r\=dash-licenses\&g\=org.eclipse.dash\&a\=org.eclipse.dash.licenses\&v\=LATEST --output dash.jar
+        curl -L https://repo.eclipse.org/service/rest/v1/search/assets/download?sort=version&repository=dash-maven2-releases&maven.groupId=org.eclipse.dash&maven.artifactId=org.eclipse.dash.licenses&maven.extension=jar --output dash.jar
     - name: Generate DEPENDENCIES
       shell: bash
       run: |
         ./gradlew allDependencies | grep -Poh "(?<=\s)[\w.-]+:[\w.-]+:[^:\s\[\]]+" | sort | uniq | java -jar dash.jar - -summary DEPENDENCIES || true
-        
+
          if ! [ -s DEPENDENCIES ];
           then
             echo "error: DEPENDENCIES file was not created correctly, likely because Dash didn't work correctly. Please trigger the workflow again";
@@ -41,7 +41,7 @@ runs:
             cat RESTRICTED;
           fi
         fi
-        
+
         rm RESTRICTED || true
 
         grep "rejected" DEPENDENCIES || true > REJECTED;
@@ -51,5 +51,5 @@ runs:
           cat REJECTED;
           exit 1;
         fi
-        
+
         rm REJECTED || true
