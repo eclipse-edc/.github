@@ -44,44 +44,43 @@ jobs:
   message:
     runs-on: ubuntu-latest
     steps:
-      - name: New Discussion
-        uses: tsickert/discord-webhook@b217a69502f52803de774ded2b1ab7c282e99645 # v7.0.0
-        if: ${{ (inputs.event_name == 'discussion') }}
-        with:
-          webhook-url: ${{ secrets.env_discord }}
-          avatar-url: https://avatars.githubusercontent.com/u/9919?s=200&v=4
-          embed-author-name: ${{ inputs.event_sender_login }}
-          embed-author-url: ${{ inputs.event_sender_html_url }}
-          embed-author-icon-url: ${{ inputs.event_sender_avatar_url }}
-          embed-title: ${{ inputs.event_discussion_title }}
-          embed-url: ${{ inputs.event_discussion_html_url }}
-          embed-description: A **discussion** has been created in ${{ inputs.repository_name }}.
-          embed-color: 16305330
+      - name: Send Notification
+        run: |
+          if [ "${{ inputs.event_name }}" = "discussion" ]; then
+            title="${{ inputs.event_discussion_title }}"
+            url="${{ inputs.event_discussion_html_url }}"
+            description="A **discussion** has been created in ${{ inputs.repository_name }}."
+            color=16305330
+          elif [ "${{ inputs.event_name }}" = "issues" ]; then
+            title="${{ inputs.event_issue_title }}"
+            url="${{ inputs.event_issue_html_url }}"
+            description="An **issue** has been opened in ${{ inputs.repository_name }}."
+            color=14023876
+          elif [ "${{ inputs.event_name }}" = "pull_request_target" ]; then
+            title="${{ inputs.event_pull_request_title }}"
+            url="${{ inputs.event_pull_request_html_url }}"
+            description="A **pull request** has been opened in ${{ inputs.repository_name }}."
+            color=7317724
+          fi
 
-      - name: New Issue
-        uses: tsickert/discord-webhook@b217a69502f52803de774ded2b1ab7c282e99645 # v7.0.0
-        if: ${{ (inputs.event_name == 'issues') }}
-        with:
-          webhook-url: ${{ secrets.env_discord }}
-          avatar-url: https://avatars.githubusercontent.com/u/9919?s=200&v=4
-          embed-author-name: ${{ inputs.event_sender_login }}
-          embed-author-url: ${{ inputs.event_sender_html_url }}
-          embed-author-icon-url: ${{ inputs.event_sender_avatar_url }}
-          embed-title: ${{ inputs.event_issue_title }}
-          embed-url: ${{ inputs.event_issue_html_url }}
-          embed-description: An **issue** has been opened in ${{ inputs.repository_name }}.
-          embed-color: 14023876
+          payload=$(jq -n \
+            --arg author_name "${{ inputs.event_sender_login }}" \
+            --arg author_url "${{ inputs.event_sender_html_url }}" \
+            --arg author_icon "${{ inputs.event_sender_avatar_url }}" \
+            --arg title "$title" \
+            --arg url "$url" \
+            --arg description "$description" \
+            --argjson color "$color" \
+            '{
+              username: "GitHub",
+              avatar_url: "https://avatars.githubusercontent.com/u/9919?s=200&v=4",
+              embeds: [{
+                author: { name: $author_name, url: $author_url, icon_url: $author_icon },
+                title: $title,
+                url: $url,
+                description: $description,
+                color: $color
+              }]
+            }')
 
-      - name: New Pull Request
-        uses: tsickert/discord-webhook@b217a69502f52803de774ded2b1ab7c282e99645 # v7.0.0
-        if: ${{ (inputs.event_name == 'pull_request_target') }}
-        with:
-          webhook-url: ${{ secrets.env_discord }}
-          avatar-url: https://avatars.githubusercontent.com/u/9919?s=200&v=4
-          embed-author-name: ${{ inputs.event_sender_login }}
-          embed-author-url: ${{ inputs.event_sender_html_url }}
-          embed-author-icon-url: ${{ inputs.event_sender_avatar_url }}
-          embed-title: ${{ inputs.event_pull_request_title }}
-          embed-url: ${{ inputs.event_pull_request_html_url }}
-          embed-description: A **pull request** has been opened in ${{ inputs.repository_name }}.
-          embed-color: 7317724
+          curl -s -X POST "${{ secrets.env_discord }}" -H "Content-Type: application/json" -d "$payload"
