@@ -45,28 +45,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send Notification
+        env:
+          EVENT_NAME: ${{ inputs.event_name }}
+          DISCUSSION_TITLE: ${{ inputs.event_discussion_title }}
+          DISCUSSION_URL: ${{ inputs.event_discussion_html_url }}
+          ISSUE_TITLE: ${{ inputs.event_issue_title }}
+          ISSUE_URL: ${{ inputs.event_issue_html_url }}
+          PR_TITLE: ${{ inputs.event_pull_request_title }}
+          PR_URL: ${{ inputs.event_pull_request_html_url }}
+          REPO_NAME: ${{ inputs.repository_name }}
+          SENDER_LOGIN: ${{ inputs.event_sender_login }}
+          SENDER_HTML_URL: ${{ inputs.event_sender_html_url }}
+          SENDER_AVATAR_URL: ${{ inputs.event_sender_avatar_url }}
+          DISCORD_WEBHOOK: ${{ secrets.env_discord }}
         run: |
-          if [ "${{ inputs.event_name }}" = "discussion" ]; then
-            title="${{ inputs.event_discussion_title }}"
-            url="${{ inputs.event_discussion_html_url }}"
-            description="A **discussion** has been created in ${{ inputs.repository_name }}."
+          if [ "$EVENT_NAME" = "discussion" ]; then
+            title="$DISCUSSION_TITLE"
+            url="$DISCUSSION_URL"
+            description="A **discussion** has been created in $REPO_NAME."
             color=16305330
-          elif [ "${{ inputs.event_name }}" = "issues" ]; then
-            title="${{ inputs.event_issue_title }}"
-            url="${{ inputs.event_issue_html_url }}"
-            description="An **issue** has been opened in ${{ inputs.repository_name }}."
+          elif [ "$EVENT_NAME" = "issues" ]; then
+            title="$ISSUE_TITLE"
+            url="$ISSUE_URL"
+            description="An **issue** has been opened in $REPO_NAME."
             color=14023876
-          elif [ "${{ inputs.event_name }}" = "pull_request_target" ]; then
-            title="${{ inputs.event_pull_request_title }}"
-            url="${{ inputs.event_pull_request_html_url }}"
-            description="A **pull request** has been opened in ${{ inputs.repository_name }}."
+          elif [ "$EVENT_NAME" = "pull_request_target" ]; then
+            title="$PR_TITLE"
+            url="$PR_URL"
+            description="A **pull request** has been opened in $REPO_NAME."
             color=7317724
           fi
 
           payload=$(jq -n \
-            --arg author_name "${{ inputs.event_sender_login }}" \
-            --arg author_url "${{ inputs.event_sender_html_url }}" \
-            --arg author_icon "${{ inputs.event_sender_avatar_url }}" \
+            --arg author_name "$SENDER_LOGIN" \
+            --arg author_url "$SENDER_HTML_URL" \
+            --arg author_icon "$SENDER_AVATAR_URL" \
             --arg title "$title" \
             --arg url "$url" \
             --arg description "$description" \
@@ -83,4 +96,4 @@ jobs:
               }]
             }')
 
-          curl -s -X POST "${{ secrets.env_discord }}" -H "Content-Type: application/json" -d "$payload"
+          curl -s -X POST "$DISCORD_WEBHOOK" -H "Content-Type: application/json" -d "$payload"
