@@ -80,6 +80,8 @@ jobs:
   deploy-swagger-ui:
     needs: generate-swagger-ui
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
@@ -87,8 +89,7 @@ jobs:
           pattern: "*-api"
           merge-multiple: true
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        uses: eclipse-edc/.github/.github/actions/deploy-gh-pages@main
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: .
-          keep_files: true
+          token: ${{ secrets.GITHUB_TOKEN }}

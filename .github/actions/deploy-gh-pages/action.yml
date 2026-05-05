@@ -1,0 +1,36 @@
+name: "Deploy to GitHub Pages"
+description: "Pushes files to the gh-pages branch, preserving existing content"
+
+inputs:
+  publish_dir:
+    description: "Directory whose contents to deploy"
+    required: true
+  token:
+    description: "GitHub token used for pushing"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Push to gh-pages
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      run: |
+        REPO_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+        DEPLOY_DIR=$(mktemp -d)
+        if git clone --branch gh-pages --single-branch --depth 1 "${REPO_URL}" "${DEPLOY_DIR}" 2>/dev/null; then
+          echo "Cloned existing gh-pages branch"
+        else
+          git init "${DEPLOY_DIR}"
+          git -C "${DEPLOY_DIR}" checkout -b gh-pages
+          git -C "${DEPLOY_DIR}" remote add origin "${REPO_URL}"
+        fi
+        cp -r "${{ inputs.publish_dir }}/." "${DEPLOY_DIR}/"
+        git -C "${DEPLOY_DIR}" config user.name "github-actions[bot]"
+        git -C "${DEPLOY_DIR}" config user.email "github-actions[bot]@users.noreply.github.com"
+        git -C "${DEPLOY_DIR}" add -A
+        git -C "${DEPLOY_DIR}" diff --cached --quiet || (
+          git -C "${DEPLOY_DIR}" commit -m "Deploy to GitHub Pages [skip ci]"
+          git -C "${DEPLOY_DIR}" push origin gh-pages
+        )

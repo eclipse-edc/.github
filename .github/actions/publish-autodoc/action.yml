@@ -51,9 +51,8 @@ runs:
         cp deploy/autodoc/${{ env.VERSION }}/* deploy/autodoc/
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      uses: eclipse-edc/.github/.github/actions/deploy-gh-pages@main
       with:
-        github_token: ${{ inputs.token }}
         publish_dir: deploy
-        keep_files: true
+        token: ${{ inputs.token }}
  
