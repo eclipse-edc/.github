@@ -28,7 +28,7 @@ runs:
     - name: evaluate DEPENDENCIES
       shell: bash
       run: |
-        grep "restricted" DEPENDENCIES || true > RESTRICTED;
+        grep "restricted" DEPENDENCIES > RESTRICTED || true;
         if [ -s RESTRICTED ];
         then
           if [[ "${{ inputs.run }}" == "strict" ]];
@@ -44,7 +44,7 @@ runs:
 
         rm RESTRICTED || true
 
-        grep "rejected" DEPENDENCIES || true > REJECTED;
+        grep "rejected" DEPENDENCIES > REJECTED || true;
         if [ -s REJECTED ];
         then
           echo "error: rejected dependencies found:";
