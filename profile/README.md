@@ -23,14 +23,12 @@ Hey, this is us 👋 The committers drive this open source project, take respons
 
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/8570990?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/80531692?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
-![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/72562218?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/94012519?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/43503240?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/377841?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/72392527?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/72978761?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/98812?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
-![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/88310985?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/84021794?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 ![](https://images.weserv.nl/?url=avatars.githubusercontent.com/u/73034804?v=4&h=50&w=50&fit=cover&mask=circle&maxage=7d)
 
