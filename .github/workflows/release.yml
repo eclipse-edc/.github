@@ -35,9 +35,8 @@ jobs:
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
 
       - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
-#        TODO: re-enable once 0.18.0 is released
-#        with:
-#          run: strict
+        with:
+          run: strict
 
       - run: ./gradlew compileJava build -DrunAllTests=true -DexcludeTags=${{ inputs.test-tag-exclusions }}
 
