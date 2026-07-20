@@ -12,7 +12,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10
+      - uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629 # v10
         with:
           operations-per-run: 1000
           days-before-issue-stale: 28
@@ -33,7 +33,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10
+      - uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629 # v10
         with:
           operations-per-run: 1000
           days-before-issue-stale: 28
@@ -54,7 +54,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10
+      - uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629 # v10
         with:
           operations-per-run: 1000
           days-before-issue-stale: 14
@@ -76,7 +76,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10
+      - uses: actions/stale@1e223db275d687790206a7acac4d1a11bd6fe629 # v10
         with:
           operations-per-run: 1000
           days-before-issue-stale: -1 # ignore issues (overwrite default days-before-stale)
