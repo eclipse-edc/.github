@@ -21,4 +21,4 @@ _Please @-mention the committer that will sponsor your feature_.
 
 Closes # <-- _insert Issue number if one exists_
 
-_Please be sure to take a look at the [contributing guidelines](https://github.com/eclipse-edc/.github/blob/main/CONTRIBUTING.md#submit-a-pull-request) and our [etiquette for pull requests](https://github.com/eclipse-edc/.github/blob/main/contributing/pr_etiquette.md)._
+_Please be sure to take a look at the [contributing guidelines](https://eclipse-edc.github.io/documentation/for-contributors/guidelines/#submitting-a-pull-request) and our [etiquette for pull requests](https://eclipse-edc.github.io/documentation/for-contributors/guidelines/pr-etiquette/)._
