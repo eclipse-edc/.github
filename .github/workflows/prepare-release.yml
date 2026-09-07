@@ -21,10 +21,12 @@ jobs:
         shell: bash
         id: vars
         run: |
-          type=bugfix
-          if [[ ${{ inputs.version }} == *0 ]] 
-          then
+          if [[ ${{ inputs.version }} == *"-"* ]]; then
+            type=prerelease
+          elif [[ ${{ inputs.version }} == *0 ]]; then
             type=release
+          else
+            type=bugfix
           fi
           echo "type=$type" >> $GITHUB_OUTPUT
 
