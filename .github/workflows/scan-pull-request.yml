@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: agilepathway/label-checker@v1.6.65
         with:
-          any_of: api,bug,build,dependencies,documentation,enhancement,no-changelog,refactoring
+          any_of: api,bug,build,dependencies,documentation,enhancement,no-changelog,refactoring,security
           repo_token: ${{ secrets.envGH }}
 
   review-allowed-licenses:
