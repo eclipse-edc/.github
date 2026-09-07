@@ -34,9 +34,19 @@ jobs:
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
 
+      - id: set-deps-mode
+        run: |
+          # versions that contain a - like "x.y.x-rc1" should go through a standard check
+          # stable versions without a suffix should be strictly checked.
+          if [[ "${{ steps.set-version.outputs.VERSION }}" == *"-"* ]]; then
+            echo "MODE=standard" >> $GITHUB_OUTPUT
+          else
+            echo "MODE=strict" >> $GITHUB_OUTPUT
+          fi
+
       - uses: eclipse-edc/.github/.github/actions/generate-dependencies-file@main
-#        with:
-#          run: strict
+        with:
+          run: ${{ steps.set-deps-mode.outputs.MODE }}
 
       - run: ./gradlew compileJava build -DrunAllTests=true -DexcludeTags=${{ inputs.test-tag-exclusions }}
 
@@ -81,8 +91,10 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: |
+          TAG=${{ needs.Release.outputs.TAG }}
           latest=$(gh release view --json tagName | jq -r '.tagName')
-          gh release create ${{ needs.Release.outputs.TAG }} --latest --generate-notes --notes-start-tag ${latest}
+          [[ "$TAG" == *"-"* ]] && EXTRA_FLAGS="--prerelease" || EXTRA_FLAGS="--latest"
+          gh release create $TAG $EXTRA_FLAGS --generate-notes --notes-start-tag ${latest}
         env:
           GH_TOKEN: ${{ github.token }}
 

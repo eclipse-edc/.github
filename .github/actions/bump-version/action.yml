@@ -22,17 +22,25 @@ runs:
         # read the major, minor, and patch components, consume -SNAPSHOT
         IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"$baseVersion"
         INC=0
-        # Compute new snapshot version, do not increment snapshot on non-final releases, e.g. -rc1
-        if [ -z $SNAPSHOT ]; then
-          echo "$baseVersion is a final release version, increase patch for next snapshot"
+        # Compute new snapshot version
+        if [ -z "$SNAPSHOT" ]; then
+          echo "$baseVersion is a final release version, increase minor for next snapshot"
           INC=1
+        elif [[ "$SNAPSHOT" =~ ^[Rr][Cc][0-9]+$ ]]; then
+          echo "$baseVersion is an RC release version, converting to snapshot without incrementing"
+          INC=0
         else
-          echo "$baseVersion is not a final release version (contains \"$SNAPSHOT\"), will not increase patch"
+          echo "$baseVersion is not a final release version (contains \"$SNAPSHOT\"), will not increase version"
           exit 0;
         fi
 
         # construct the new version
-        newVersion="$RELEASE_VERSION_MAJOR.$((RELEASE_VERSION_MINOR+$INC)).0"-SNAPSHOT
+        newVersion="$RELEASE_VERSION_MAJOR.$((RELEASE_VERSION_MINOR+INC)).0-SNAPSHOT"
+
+        if [ "$newVersion" = "$existingVersion" ]; then
+          echo "Version is already $existingVersion, nothing to do"
+          exit 0
+        fi
 
         # replace every occurrence of =$baseVersion with =$newVersion
         grep -rlz "$existingVersion" . --exclude=\*.{sh,bin} | xargs sed -i "s/$existingVersion/$newVersion/g"
