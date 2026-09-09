@@ -49,7 +49,7 @@ jobs:
             exit 0
           fi
 
-          VERSION=$(cat $JSON_VERSION_FILE | jq '.[] | select(.maturity=="stable" or .maturity==null) | .version' | cut -d '"' -f 2)
+          VERSION=$(cat $JSON_VERSION_FILE | jq '.[] | select(.maturity=="stable" or .maturity==null) | .version' | cut -d '"' -f 2 | head -n 1)
           ./gradlew mergeOpenApiSpec --inputDir=${PWD}/resources/openapi/yaml/${{ matrix.apiGroup }} --output=${{ matrix.apiGroup }}-new.yaml --infoTitle="${{ matrix.apiGroup }}" --infoDescription="REST API documentation for the ${{ matrix.apiGroup }}" --infoVersion=$VERSION
           
           git show origin/gh-pages:openapi/${{ matrix.apiGroup }}/${{ matrix.apiGroup }}.yaml > ${{ matrix.apiGroup }}.yaml
