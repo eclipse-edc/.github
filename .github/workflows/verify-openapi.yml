@@ -54,7 +54,7 @@ jobs:
           
           git show origin/gh-pages:openapi/${{ matrix.apiGroup }}/${{ matrix.apiGroup }}.yaml > ${{ matrix.apiGroup }}.yaml
           
-          diff ${{ matrix.apiGroup }}.yaml ${{ matrix.apiGroup }}-new.yaml > diff
+          diff ${{ matrix.apiGroup }}.yaml ${{ matrix.apiGroup }}-new.yaml > diff || true
           
           echo "diff with the current version"
           cat diff
