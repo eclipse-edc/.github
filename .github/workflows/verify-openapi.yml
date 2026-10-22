@@ -53,7 +53,11 @@ jobs:
           ./gradlew mergeOpenApiSpec --inputDir=${PWD}/resources/openapi/yaml/${{ matrix.apiGroup }} --output=${{ matrix.apiGroup }}-new.yaml --infoTitle="${{ matrix.apiGroup }}" --infoDescription="REST API documentation for the ${{ matrix.apiGroup }}" --infoVersion=$VERSION
           
           git show origin/gh-pages:openapi/${{ matrix.apiGroup }}/${{ matrix.apiGroup }}.yaml > ${{ matrix.apiGroup }}.yaml
-          
+
+          # the merged spec has no stable key order (e.g. of paths), so keys are sorted before comparing
+          yq -i -P 'sort_keys(..)' ${{ matrix.apiGroup }}.yaml
+          yq -i -P 'sort_keys(..)' ${{ matrix.apiGroup }}-new.yaml
+
           diff ${{ matrix.apiGroup }}.yaml ${{ matrix.apiGroup }}-new.yaml > diff || true
           
           echo "diff with the current version"
