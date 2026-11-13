@@ -43,13 +43,13 @@ jobs:
 
           RELEASE_REF=${{ steps.vars.outputs.type }}/${{ inputs.version }}
           git checkout -B $RELEASE_REF
-          
+
           git add .
           git commit --allow-empty -m "Prepare ${{ steps.vars.outputs.type }} ${{ inputs.version }}"
-          
+
           # handle the case in which the branch already exist
-          git pull --rebase origin $RELEASE_REF || true 
-          
+          git pull --rebase origin $RELEASE_REF || true
+
           git push origin $RELEASE_REF
           echo "RELEASE_REF=$RELEASE_REF" >> $GITHUB_OUTPUT
 
@@ -65,12 +65,19 @@ jobs:
       - uses: eclipse-edc/.github/.github/actions/bump-version@main
         with:
           base_version: ${{ inputs.version }}
+
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+        id: publish-snapshot
+        continue-on-error: true
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           username: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
           password: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
+
+      - name: Warn on snapshot publication failure
+        if: steps.publish-snapshot.outcome == 'failure'
+        run: echo "::warning::Snapshot publication failed, the release preparation will continue anyway"
 
   Publish-Bugfix-Snapshot:
     if: github.ref_name != 'main'
@@ -81,10 +88,16 @@ jobs:
         with:
           ref: ${{ needs.Prepare-Release.outputs.RELEASE_REF }}
       - uses: eclipse-edc/.github/.github/actions/setup-build@main
+
       - uses: eclipse-edc/.github/.github/actions/publish-maven-artifacts@main
+        id: publish-snapshot
+        continue-on-error: true
         with:
           gpg-private-key: ${{ secrets.ORG_GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.ORG_GPG_PASSPHRASE }}
           username: ${{ secrets.CENTRAL_SONATYPE_TOKEN_USERNAME }}
           password: ${{ secrets.CENTRAL_SONATYPE_TOKEN_PASSWORD }}
 
+      - name: Warn on snapshot publication failure
+        if: steps.publish-snapshot.outcome == 'failure'
+        run: echo "::warning::Snapshot publication failed, the release preparation will continue anyway"

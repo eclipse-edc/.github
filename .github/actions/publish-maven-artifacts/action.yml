@@ -32,4 +32,3 @@ runs:
       ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ inputs.gpg-private-key }}
       ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ inputs.gpg-passphrase }}
     run: ./gradlew publishToMavenCentral -Psigning.gnupg.executable=gpg -Psigning.gnupg.passphrase="${{ inputs.gpg-passphrase }}"
- 
