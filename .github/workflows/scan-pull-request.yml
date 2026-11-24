@@ -3,8 +3,9 @@ name: Scan Pull Request
 on:
   workflow_call:
     secrets:
+      # Deprecated: no longer used. Kept optional so existing callers that still pass it keep working.
       envGH:
-        required: true
+        required: false
 
 jobs:
   check-pull-request-title:
@@ -33,10 +34,19 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: false
     steps:
-      - uses: agilepathway/label-checker@v2.0.81
-        with:
-          any_of: api,bug,build,dependencies,documentation,enhancement,no-changelog,refactoring,security
-          repo_token: ${{ secrets.envGH }}
+      - name: Require at least one allowed label
+        env:
+          LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          ALLOWED: api,bug,build,dependencies,documentation,enhancement,no-changelog,refactoring,security
+        run: |
+          if jq -e --arg allowed "$ALLOWED" \
+               '($allowed | split(",")) as $a | any(.[]; . as $l | $a | index($l))' \
+               <<<"$LABELS" > /dev/null; then
+            echo "Found an allowed label."
+          else
+            echo "::error::PR must have at least one of these labels: $ALLOWED"
+            exit 1
+          fi
 
   review-allowed-licenses:
     runs-on: ubuntu-latest
